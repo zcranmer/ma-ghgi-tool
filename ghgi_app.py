@@ -4,13 +4,10 @@ Main file in public dashboard tool
 MA Greenhouse Gas Inventory Tool
 """
 
-import os
 import streamlit as st
 import pandas as pd
 #import numpy as np
-import pydeck
 import json
-import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
