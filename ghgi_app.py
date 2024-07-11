@@ -38,12 +38,17 @@ colors_fuel = {'Electricity':'darkgreen',
 colors_waste = {'Trash':'darkblue',
                 'Single Stream Recycling':'blue',
                 'Other Recycling':'royalblue',
-                'Organics':'lightsteelblue'}
+                'Organics':'lightsteelblue',
+                'Trash L':'darkblue',
+                'Trash I':'steelblue',
+                'Wastewater AD':'saddlebrown',
+                'Wastewater':'chocolate',
+                'Septic':'gold'}
 
 # loading data function
 @st.cache_data
 def load_data():
-    df = pd.read_excel('datasets/municipal_emissions.xlsx')
+    df = pd.read_csv('datasets/municipal_emissions.csv')
     df = df.drop(columns=['Unnamed: 0'])
     gdf = json.load(open('datasets/municipalities.json'))
     
@@ -76,10 +81,10 @@ def m_graph1(m):
     
     fig.update_layout(title=dict(text='Emissions in '+m,font=dict(size=28)),
                       yaxis=dict(range=[0,1.4*(subset['Total (CO2e)'].max())],
-                                 title=dict(text='Total CO2e',font=dict(size=18),standoff=10),
+                                 title=dict(text='Total MTCO2e',font=dict(size=18),standoff=10),
                                  tickfont=dict(size=14)),
                       yaxis2=dict(range=[0,1.5*(subset['Per Capita (CO2e)'].max())],
-                                  title=dict(text='Per Capita CO2e',font=dict(size=18),standoff=0),
+                                  title=dict(text='Per Capita MTCO2e',font=dict(size=18),standoff=0),
                                   tickfont=dict(size=14))
                       )
     fig.update_xaxes(title=dict(text='Year',font=dict(size=18)),
@@ -180,7 +185,7 @@ def my_graph1(m,y):
                textinfo='label+percent',textfont_size=14),
         row=2,col=2)
     
-    fig.update_layout(title=dict(text='Shares of energy and emissions in '+str(y),font=dict(size=28)),
+    fig.update_layout(title=dict(text='Shares of energy and emissions in '+m+' in '+str(y),font=dict(size=28)),
                       height=750,width=800,
                       showlegend=False
                       )
@@ -481,7 +486,7 @@ def bldg_graph2(m3,y3):
                textinfo='label+percent',textfont_size=14),
         row=2,col=2)
     
-    fig.update_layout(title=dict(text='Share emissions and sources in '+str(y3),font=dict(size=28)),
+    fig.update_layout(title=dict(text='Share emissions and sources in '+m3+' in '+str(y3),font=dict(size=28)),
                       height=900,width=900,
                       showlegend=False
                       )
@@ -566,13 +571,13 @@ def trans_graph(m5,y5):
                textinfo='label+percent',textfont_size=14,showlegend=False),
         row=1,col=2)
     
-    fig.update_layout(title=dict(text='Share emissions and sources in '+str(y5),font=dict(size=28)),
+    fig.update_layout(title=dict(text='Share emissions and sources in '+m5+' in '+str(y5),font=dict(size=28)),
                       yaxis=dict(title=dict(text='MMBTU',font=dict(size=18),standoff=10),
                                  tickfont=dict(size=14)),
                       xaxis=dict(title=dict(text='Year',font=dict(size=18)),
                                  tickvals=subset.Year,
                                  tickfont=dict(size=14)),
-                      height=600,width=500
+                      height=600,width=800
                       )
 
     st.plotly_chart(fig)
@@ -581,11 +586,67 @@ def trans_graph(m5,y5):
 
 # function for waste
 @st.cache_data
-def waste_graph(m6,y6):
+def waste_graph(m6,y6,landfill,mwra,septic):
     subset = dataset[dataset['Municipality']==m6]
     year_set6 = dataset[(dataset['Year']==y6)&(dataset['Municipality']==m6)]
     
-    fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'}, {'type':'domain'}]],
+    print(landfill*subset['Landfill (CO2e)'])
+    
+    if m6 == 'Massachusetts':
+        landfill = 1
+        incinerator = 1
+        mwra = 1
+        wwtp = 1
+        septic = 1
+    else:
+        incinerator = 1-landfill
+        wwtp = 1-septic
+    
+    fig = make_subplots(rows=1,cols=1)
+    # solid waste emissions
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=landfill*subset['Landfill (CO2e)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   name='Landfill',line=dict(color=colors_waste['Trash L'])),
+                   row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=incinerator*subset['Incineration (CO2e)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   name='Incinerator',line=dict(color=colors_waste['Trash I'])),
+                   row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Compost (CO2e)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   name='Compost',line=dict(color=colors_waste['Organics'])),
+                   row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=mwra*subset['MWRA AD (MTCO2e)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   name='Wastewater w/AD',line=dict(color=colors_waste['Wastewater AD'])),
+                   row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=wwtp*subset['WWTP (MTCO2e)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   name='Wastewater',line=dict(color=colors_waste['Wastewater'])),
+                   row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=septic*subset['Septic (MTCO2e)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   name='Septic',line=dict(color=colors_waste['Septic'])),
+                   row=1,col=1)
+    
+    fig.update_layout(title=dict(text='Waste Emissions in '+str(m6),font=dict(size=28)),
+                      yaxis=dict(title=dict(text='CO2e',font=dict(size=18),standoff=10),
+                                 tickfont=dict(size=14)),
+                      xaxis=dict(title=dict(text='Year',font=dict(size=18)),
+                                 tickvals=subset.Year,
+                                 tickfont=dict(size=14)),
+                      height=600,width=600)
+    st.plotly_chart(fig)
+    
+    
+    fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'}, {'type':'domain'}],
+                                             ],
                         subplot_titles=('Solid waste over time',
                                         'Share of waste in '+str(y6)),
                         horizontal_spacing = 0.1,
@@ -613,6 +674,7 @@ def waste_graph(m6,y6):
                    name='Organics',line=dict(color=colors_waste['Organics'])),
                    row=1,col=1)
     
+    
     # pie chart
     graph_cols = ['trash','single stream recyc',
                   'other recyc','organics']
@@ -620,7 +682,7 @@ def waste_graph(m6,y6):
     msw_year_sub = year_set6[graph_cols].T
     msw_year_sub = msw_year_sub.rename(columns={msw_year_sub.columns[0]:'Waste'},
                                      index={'trash':'Trash',
-                                      'single stream recyc':'Single Stream Recycling',
+                                      'single stream recyc':'Single Stream\nRecycling',
                                         'other recyc':'Other Recycling',
                                         'organics':'Organics'}
                                      )
@@ -659,25 +721,29 @@ def map_figure(y,d):
         # total emissions
         st.write('Total emissions by municipality')
         fig = px.choropleth(dataset_year,geojson=geo,locations='TOWN',
-                            featureidkey='properties.Name',color='Total (CO2e)')
+                            featureidkey='properties.Name',color='Total (CO2e)',
+                            labels={'Total (CO2e)':'MTCO2e'})
     
     elif d == 'Per Capita Emissions':
         # per capita emissions
         st.write('Per person emissions by municipality in '+str(y))
         fig = px.choropleth(dataset_year,geojson=geo,locations='TOWN',
-                            featureidkey='properties.Name',color='Per Capita (CO2e)')
+                            featureidkey='properties.Name',color='Per Capita (CO2e)',
+                            labels={'Per Capita (CO2e)':'MTCO2e'})
         
     elif d == 'Building Emissions':
         dataset_year['Total Buildings (CO2e)'] = dataset_year[['Total Residential Buildings (CO2e)',
                                                                'Total Commercial & Industrial Buildings (CO2e)']].sum()
         st.write('Per person emissions by municipality in '+str(y))
         fig = px.choropleth(dataset_year,geojson=geo,locations='TOWN',
-                            featureidkey='properties.Name',color='Total Buildings (CO2e)')
+                            featureidkey='properties.Name',color='Total Buildings (CO2e)',
+                            labels={'Total Buildings (CO2e)':'MTCO2e'})
         
     elif d == 'Transportation Emissions':
         st.write('Per person emissions by municipality in '+str(y))
         fig = px.choropleth(dataset_year,geojson=geo,locations='TOWN',
-                            featureidkey='properties.Name',color='Total Transportation (CO2e)')
+                            featureidkey='properties.Name',color='Total Transportation (CO2e)',
+                            labels={'Total Transportation (CO2e)':'MTCO2e'})
     
     fig.update_geos(fitbounds='locations',visible=False)
     fig.update_layout(height=500,width=800,
@@ -802,7 +868,18 @@ with tab5:
                             range(end_year,start_year-1,-1),
                             index=0,
                             key='year6')
-    year_set6 = waste_graph(municipality6,year6)
+    landfill = st.slider('What percent of trash goes to a landfill?',
+                         value=40,
+                         min_value=0,max_value=100,key='landfill')
+    mwra = st.toggle('Is your municipality part of the MWRA?',
+                     value=True,key='mwra')
+    if mwra == False:
+        septic = st.slider('What percent of households have septic systems?',
+                           value=50,
+                           min_value=0,max_value=100,key='septic')
+    else:
+        septic = 0
+    year_set6 = waste_graph(municipality6,year6,landfill/100,mwra,septic/100)
     
     st.write('Data Sources: MA DEP')
     
