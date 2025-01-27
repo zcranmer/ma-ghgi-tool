@@ -19,13 +19,13 @@ st.set_page_config(layout='wide',
                    page_title='MA GHGI Tool'
                    )
 
-st.title('Community Greenhouse Gas Inventory Tool')
-st.write('This tool shows municipality-wide energy and emissions data from \
+st.title('Massachusetts Community Greenhouse Gas Inventory Tool')
+st.write('This tool shows community-wide energy and emissions data from \
         buildings, transportation, and waste. Residential and commercial \
-        activities are included in addition to municipal. This is app is \
+        activities are included in addition to municipal. This app is \
         under development and does not yet include all possible sources of \
         emissions. Please use the feedback page on the left if you have \
-        questions about anything in this dashboard.')
+        questions or comments about anything in this dashboard.')
         
 colors_fuel = {'Electricity':'darkgreen',
                'Wood':'forestgreen',
@@ -33,6 +33,7 @@ colors_fuel = {'Electricity':'darkgreen',
                'Propane':'yellowgreen',
                'Fuel Oil':'darkkhaki',
                'Gasoline':'olive',
+               'Waste':'tab:brown',
                'Other':'goldenrod'}
 
 colors_waste = {'Trash':'darkblue',
@@ -104,26 +105,32 @@ def my_graph1(m,y):
     # data prep for pie charts
     graph_cols1 = ['Total Electricity (CO2e)','Total Gas (CO2e)',
                   'Total Propane (CO2e)','Total Fuel Oil (CO2e)',
-                  'Total Gasoline (CO2e)']
+                  'Total Gasoline (CO2e)',
+                  'Solid Waste Emissions (CO2e)',
+                  'Wastewater Emissions (CO2e)']
     year_sub1 = year_set[graph_cols1].T
     year_sub1 = year_sub1.rename(columns={year_sub1.columns[0]:'Emissions'},
                                index={'Total Electricity (CO2e)':'Electricity',
                                       'Total Gas (CO2e)':'Natural Gas',
                                          'Total Fuel Oil (CO2e)':'Fuel Oil',
                                          'Total Propane (CO2e)':'Propane',
-                                         'Total Gasoline (CO2e)':'Gasoline'
+                                         'Total Gasoline (CO2e)':'Gasoline',
+                                         'Solid Waste Emissions (CO2e)':'Solid Waste',
+                                         'Wastewater Emissions (CO2e)':'Wastewater'
                                          }
                                )
     year_sub1 = year_sub1.reset_index()
     
     graph_cols2 = ['Total Residential Buildings (CO2e)',
                    'Total Commercial & Industrial Buildings (CO2e)',
-                   'Total Transportation (CO2e)']
+                   'Total Transportation (CO2e)',
+                   'Waste Emissions (CO2e)']
     year_sub2 = year_set[graph_cols2].T
     year_sub2 = year_sub2.rename(columns={year_sub2.columns[0]:'Emissions'},
                                index={'Total Residential Buildings (CO2e)':'Residential',
                                       'Total Commercial & Industrial Buildings (CO2e)':'Commercial & Industrial',
-                                      'Total Transportation (CO2e)':'Transportation'
+                                      'Total Transportation (CO2e)':'Transportation',
+                                      'Waste Emissions (CO2e)':'Waste'
                                       }
                                    )
     year_sub2 = year_sub2.reset_index()
@@ -186,7 +193,7 @@ def my_graph1(m,y):
         row=2,col=2)
     
     fig.update_layout(title=dict(text='Shares of energy and emissions in '+m+' in '+str(y),font=dict(size=28)),
-                      height=750,width=800,
+                      height=750,width=1000,
                       showlegend=False
                       )
     
@@ -354,12 +361,12 @@ def bldg_graph1(m3):
                    name='Fuel Oil',line=dict(color=colors_fuel['Fuel Oil']),
                    legendgroup = '1',showlegend=False),
                    row=2,col=2)
-    fig.add_trace(
-        go.Scatter(x=subset['Year'],y=subset['Direct Emissions (CO2e)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='four',
-                   name='Other',line=dict(color=colors_fuel['Other']),
-                   legendgroup = '1'),
-                   row=2,col=2)
+    #fig.add_trace(
+    #    go.Scatter(x=subset['Year'],y=subset['Direct Emissions (CO2e)'],
+    #               hoverinfo='x+y+name',mode='lines',stackgroup='four',
+    #               name='Other',line=dict(color=colors_fuel['Other']),
+    #               legendgroup = '1'),
+    #               row=2,col=2)
 
     fig.update_traces(mode='markers+lines',hovertemplate=None)
     fig.update_layout(hovermode='x',
@@ -372,7 +379,7 @@ def bldg_graph1(m3):
                                   tickfont=dict(size=14)),
                       yaxis4=dict(title=dict(text='CO2e',font=dict(size=18),standoff=0),
                                   tickfont=dict(size=14)),
-                      height=750,width=900
+                      height=750,width=1000
                       )
     fig.update_xaxes(title=dict(text='Year',font=dict(size=18)),
                      tickvals=list(range(start_year,end_year+1)),
@@ -400,14 +407,16 @@ def bldg_graph2(m3,y3):
     
     # Commercial emissions
     graph_cols2 = ['Commercial & Industrial Electricity (CO2e)','Commercial & Industrial Gas (CO2e)',
-                      'Commercial Fuel Oil (CO2e)','Direct Emissions (CO2e)']
+                      'Commercial Fuel Oil (CO2e)',#'Direct Emissions (CO2e)'
+                      ]
 
     cf_year_sub = year_set[graph_cols2].T
     cf_year_sub = cf_year_sub.rename(columns={cf_year_sub.columns[0]:'Emissions'},
                                      index={'Commercial & Industrial Electricity (CO2e)':'Electricity',
                                       'Commercial & Industrial Gas (CO2e)':'Natural Gas',
                                          'Commercial Fuel Oil (CO2e)':'Fuel Oil',
-                                         'Direct Emissions (CO2e)':'Other'}
+                                         #'Direct Emissions (CO2e)':'Other'
+                                         }
                                      )
     cf_year_sub = cf_year_sub.reset_index()
     #print(cf_year_sub)
@@ -486,8 +495,8 @@ def bldg_graph2(m3,y3):
                textinfo='label+percent',textfont_size=14),
         row=2,col=2)
     
-    fig.update_layout(title=dict(text='Share emissions and sources in '+m3+' in '+str(y3),font=dict(size=28)),
-                      height=900,width=900,
+    fig.update_layout(title=dict(text='Share of emissions and sources in '+m3+' in '+str(y3),font=dict(size=28)),
+                      height=900,width=1000,
                       showlegend=False
                       )
 
@@ -530,7 +539,7 @@ def trans_graph(m5,y5):
     #print(rf_year_sub_f)
     
     fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'}, {'type':'domain'}]],
-                        subplot_titles=('Share of electric vehicles over time',
+                        subplot_titles=('Share of transportation fuel over time',
                                         'Share of emissions by fuel and sector'),
                         horizontal_spacing = 0.05,
                         )
@@ -568,16 +577,17 @@ def trans_graph(m5,y5):
     
     fig.add_trace(
         go.Pie(labels=rf_year_sub_f['index'], values=rf_year_sub_f['Emissions'].round(0),
+               sort=False,rotation=180,
                textinfo='label+percent',textfont_size=14,showlegend=False),
         row=1,col=2)
     
-    fig.update_layout(title=dict(text='Share emissions and sources in '+m5+' in '+str(y5),font=dict(size=28)),
+    fig.update_layout(title=dict(text='Share of emissions and sources in '+m5+' in '+str(y5),font=dict(size=28)),
                       yaxis=dict(title=dict(text='MMBTU',font=dict(size=18),standoff=10),
                                  tickfont=dict(size=14)),
                       xaxis=dict(title=dict(text='Year',font=dict(size=18)),
                                  tickvals=subset.Year,
                                  tickfont=dict(size=14)),
-                      height=600,width=800
+                      height=400,width=1000
                       )
 
     st.plotly_chart(fig)
@@ -586,11 +596,9 @@ def trans_graph(m5,y5):
 
 # function for waste
 @st.cache_data
-def waste_graph(m6,y6,landfill,mwra,septic):
+def waste_graph(m6,y6):
     subset = dataset[dataset['Municipality']==m6]
     year_set6 = dataset[(dataset['Year']==y6)&(dataset['Municipality']==m6)]
-    
-    print(landfill*subset['Landfill (CO2e)'])
     
     if m6 == 'Massachusetts':
         landfill = 1
@@ -605,12 +613,12 @@ def waste_graph(m6,y6,landfill,mwra,septic):
     fig = make_subplots(rows=1,cols=1)
     # solid waste emissions
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=landfill*subset['Landfill (CO2e)'],
+        go.Scatter(x=subset.Year,y=subset['Landfill (CO2e)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Landfill',line=dict(color=colors_waste['Trash L'])),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=incinerator*subset['Incineration (CO2e)'],
+        go.Scatter(x=subset.Year,y=subset['Incineration (CO2e)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Incinerator',line=dict(color=colors_waste['Trash I'])),
                    row=1,col=1)
@@ -620,17 +628,17 @@ def waste_graph(m6,y6,landfill,mwra,septic):
                    name='Compost',line=dict(color=colors_waste['Organics'])),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=mwra*subset['MWRA AD (MTCO2e)'],
+        go.Scatter(x=subset.Year,y=subset['MWRA AD (MTCO2e)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Wastewater w/AD',line=dict(color=colors_waste['Wastewater AD'])),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=wwtp*subset['WWTP (MTCO2e)'],
+        go.Scatter(x=subset.Year,y=subset['WWTP (MTCO2e)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Wastewater',line=dict(color=colors_waste['Wastewater'])),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=septic*subset['Septic (MTCO2e)'],
+        go.Scatter(x=subset.Year,y=subset['Septic (MTCO2e)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Septic',line=dict(color=colors_waste['Septic'])),
                    row=1,col=1)
@@ -641,7 +649,7 @@ def waste_graph(m6,y6,landfill,mwra,septic):
                       xaxis=dict(title=dict(text='Year',font=dict(size=18)),
                                  tickvals=subset.Year,
                                  tickfont=dict(size=14)),
-                      height=600,width=600)
+                      height=600,width=1000)
     st.plotly_chart(fig)
     
     
@@ -743,6 +751,7 @@ def map_figure(y,d):
         st.write('Per person emissions by municipality in '+str(y))
         fig = px.choropleth(dataset_year,geojson=geo,locations='TOWN',
                             featureidkey='properties.Name',color='Total Transportation (CO2e)',
+                            projection='mercator',
                             labels={'Total Transportation (CO2e)':'MTCO2e'})
     
     fig.update_geos(fitbounds='locations',visible=False)
@@ -765,8 +774,8 @@ dataset, geo = load_data()
 #                        min_value=start_year,max_value=end_year,
 #                       value=end_year)
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(['Overview','Demographics',
-                                        'Buildings','Transportation','Waste'])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(['Overview','Demographics',
+                                        'Buildings','Transportation','Waste','Compare'])
 
 with tab1:
     st.header('Overview of Energy and Emissions')
@@ -777,20 +786,22 @@ with tab1:
                                  dataset['Municipality'].unique().tolist(),
                                  index=0,
                                  key='municipality1')
+    
+    co2_year = dataset.loc[(dataset['Municipality']==municipality1)&(dataset['Year']==2022),'Total (CO2e)'].round(decimals=0).astype('int').item()
+    co2_base = dataset.loc[(dataset['Municipality']==municipality1)&(dataset['Year']==2019),'Total (CO2e)'].round(decimals=0).astype('int').item()
+    
+    st.metric(label='Total 2022 GHGs in MTCO2e',
+              value=f'{co2_year:,.0f}',
+              delta=round(100*(co2_year-co2_base)/co2_base,2),
+              delta_color='normal'
+              )
+        
     subset1 = m_graph1(municipality1)
     
     year1 = st.selectbox('Which year would you like to look at?',
                          range(end_year,start_year-1,-1),
                          index=0,
                          key='year1')
-    
-    data1 = st.selectbox('Which dataset would you like to map?',
-                         ['Total Emissions','Per Capita Emissions',
-                          'Building Emissions','Transportation Emissions'],
-                         index=1,
-                         key='data1')
-    
-    dataset_year = map_figure(year1,data1)
     
     # emissions pie charts
     
@@ -868,22 +879,78 @@ with tab5:
                             range(end_year,start_year-1,-1),
                             index=0,
                             key='year6')
-    landfill = st.slider('What percent of trash goes to a landfill?',
-                         value=40,
-                         min_value=0,max_value=100,key='landfill')
+    
+    incinerator_towns = ['Bedford','Burlington','Chelmsford','Dracut','Essex', # Covanta Haverhill contract communities
+                         'Groton','Harvard','Haverhill','Littleton','Lynnfield',
+                         'Middleton','North Reading','Peabody','Reading','Stoneham',
+                         'Tewksbury','Tyngsboro','Wakefield','Westford','West Newbury',
+                         'Winchester',
+                         # SEMASS collects trash from nearly 40 communities in Southeast MA, Cape Cod, and Boston metro area, but not listed in report
+                         'Quincy','Braintree','Weymouth','Hingham','Cohasset',
+                         'Scituate','Norwell','Hanover','Avon','Stoughton',
+                         'Sharon','Dighton','Berkley','Bridgewater','Kingston',
+                         'Plymouth','Carver','Wareham','Marion','Rochester',
+                         'Acushnet','Fairhaven','Sandwich','Yarmouth','Chatham',
+                         'Eastham','Truro',
+                         #Wheelabrator Millbury
+                         'Auburn','Blackstone','Dedham','Dover','East Brookfield',
+                         'Franklin','Grafton','Holden','Holliston','Hopedale',
+                         'Hopkinton','Maynard','Medfield','Medway','Mendon',
+                         'Milford','Millbury','Millis','Millville','Natick',
+                         'Needham','Newton','Northborough','Norfolk','Mansfield',
+                         'Paxton','Princeton','Rutland','Sherborn','Shrewsbury',
+                         'Southborough','Spencer','Sutton','Upton','Walpole',
+                         'Westborough','Weston','Westwood','Worcester',
+                         # Wheelabrator North Andover
+                         'Acton','Amesbury','Arlington','Belmont','Billerica',
+                         'Boxborough','Carlisle','Hamilton','Ipswich','Lexington',
+                         'Lincoln','Lowell','Manchester','Merrimac','Newburyport',
+                         'North Andover','Pepperell','Salisbury','Waltham','Watertown',
+                         'Wenham','Wilmington','Winchester',
+                         # Wheelabrator Saugus
+                         'Boston','Chelsea','Everett','Lynn','Manchester',
+                         'Newton','Revere','Saugus','Somerville'
+                         ]
+    
+    mwra_towns = ['Arlington','Ashland','Bedford','Belmont','Boston','Braintree',
+                  'Brookline','Burlington','Cambridge','Canton','Chelsea','Clinton',
+                  'Dedham','Everett','Framingham','Hingham','Holbrook','Lancaster',
+                  'Lexington','Malden','Medford','Melrose','Milton','Nahant','Natick',
+                  'Needham','Newton','Norwood','Quincy','Randolph','Reading','Revere',
+                  'Somerville','Stoneham','Stoughton','Wakefield','Walpole','Waltham',
+                  'Watertown','Wellesley','Westwood','Weymouth',
+                  'Wilmington','Winchester','Winthrop','Woburn'
+                  ]
+    
+    #if municipality6 in incinerator_towns:
+    #    landfill = 0
+    #else:
+    #    landfill = st.slider('What percent of trash goes to a landfill?',
+    #                     value=40,
+    #                     min_value=0,max_value=100,key='landfill')
     mwra = st.toggle('Is your municipality part of the MWRA?',
                      value=True,key='mwra')
-    if mwra == False:
-        septic = st.slider('What percent of households have septic systems?',
-                           value=50,
-                           min_value=0,max_value=100,key='septic')
-    else:
-        septic = 0
-    year_set6 = waste_graph(municipality6,year6,landfill/100,mwra,septic/100)
+
+    year_set6 = waste_graph(municipality6,year6)
     
     st.write('Data Sources: MA DEP')
     
+with tab6:
+    st.header('Comparison Tool')
+    st.write('Choose up to ten cities and towns to compare.')
     
+    year7 = st.selectbox('Which year would you like to look at?',
+                         range(end_year,start_year-1,-1),
+                         index=0,
+                         key='year7')
+    
+    data1 = st.selectbox('Which dataset would you like to map?',
+                         ['Total Emissions','Per Capita Emissions',
+                          'Building Emissions','Transportation Emissions'],
+                         index=1,
+                         key='data1')
+    
+    dataset_year = map_figure(year7,data1)
     
 
 
