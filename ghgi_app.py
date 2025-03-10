@@ -59,7 +59,11 @@ def load_data():
     dataset['Per Capita (CO2e)'] = dataset['Total (CO2e)']/dataset['Population']
     #print(dataset['Per Capita (CO2e)'])
     
-    return dataset,gdf
+    df_solar = pd.read_csv('datasets/solar_data.csv')
+    df_evs = pd.read_csv('datasets/residential_vehicles.csv')
+    df_stations = pd.read_csv('datasets/ev_stations.csv')
+    
+    return dataset,gdf,df_solar,df_evs,df_stations
 
 # function for annual emissions graph(s)
 @st.cache_data
@@ -505,6 +509,133 @@ def bldg_graph2(m3,y3):
     
     # add graph showing number of employers and jobs in different sectors
 
+# function for solar graphs
+@st.cache_data
+def solar_graph(m4):
+    subset = solar[solar['City']==m4]
+    # new and cumulative graph
+    fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'},{'type':'scatter'}]],
+                        subplot_titles=('New solar capacity','Cumulative solar capacity')
+                        )
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Capacity (kW DC) All'],
+                   hoverinfo='x+y+name',mode='lines',
+                   name='New Capacity'),
+                   row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Capacity (kW DC) Residential (3 or fewer dwelling units per building)'],
+                   hoverinfo='x+y+name',mode='lines',
+                   name='New Residential Capacity'),
+                   row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Capacity (kW DC) All Cumulative'],
+                   hoverinfo='x+y+name',mode='lines',
+                   name='Cumulative Capacity'),
+                   row=1,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Capacity (kW DC) Residential Cumulative'],
+                   hoverinfo='x+y+name',mode='lines',
+                   name='Cumulative Residential Capacity'),
+                   row=1,col=2)
+    
+    fig.update_layout(title=dict(text='Solar adoption in '+m4,font=dict(size=28)),
+                      yaxis=dict(#range=[0,1.4*(subset['Total (CO2e)'].max())],
+                                 title=dict(text='Capacity (kW DC)',font=dict(size=18),standoff=15),
+                                 tickfont=dict(size=14)),
+                      yaxis2=dict(#range=[0,1.4*(subset['Total (CO2e)'].max())],
+                                 title=dict(text='Capacity (kW DC)',font=dict(size=18),standoff=10),
+                                 tickfont=dict(size=14))
+                      )
+    fig.update_xaxes(title=dict(text='Year',font=dict(size=18)),
+                     tickvals=list(range(2000,2024,5)),
+                     tickfont=dict(size=14))
+    fig.update_traces(mode='markers+lines',hovertemplate=None)
+    fig.update_layout(hovermode='x',showlegend=True,
+                      legend=dict(orientation="h",
+                                  yanchor="bottom",
+                                  y=-0.4,
+                                  xanchor="right",
+                                  x=1,
+                                  font=dict(size=14))
+                      )
+    st.plotly_chart(fig)
+    
+    # sector pie charts
+    year_set4 = solar[(solar['City']==m4)&(solar['Year']==2023)]
+    graph_cols1 = ['Capacity (kW DC) Residential Cumulative',
+                  'Capacity (kW DC) Multifamily Cumulative',
+                  'Capacity (kW DC) Mixed use Cumulative',
+                  'Capacity (kW DC) Commercial Cumulative',
+                  'Capacity (kW DC) Municipal Cumulative',
+                  'Capacity (kW DC) State/Fed Cumulative',
+                  'Capacity (kW DC) Industrial Cumulative',
+                  'Capacity (kW DC) Agricultural Cumulative',
+                  'Capacity (kW DC) Community Solar Cumulative',
+                  'Capacity (kW DC) Other Cumulative']
+    
+    graph_cols2 = ['Project Count Residential Cumulative',
+                  'Project Count Multifamily Cumulative',
+                  'Project Count Mixed use Cumulative',
+                  'Project Count Commercial Cumulative',
+                  'Project Count Municipal Cumulative',
+                  'Project Count State/Fed Cumulative',
+                  'Project Count Industrial Cumulative',
+                  'Project Count Agricultural Cumulative',
+                  'Project Count Community Solar Cumulative',
+                  'Project Count Other Cumulative']
+    
+    sa_year_sub1 = year_set4[graph_cols1].T
+    sa_year_sub1 = sa_year_sub1.rename(columns={sa_year_sub1.columns[0]:'Sectors'},
+                                     index={'Capacity (kW DC) Residential Cumulative':'Residential',
+                                      'Capacity (kW DC) Multifamily Cumulative':'Multifamily',
+                                        'Capacity (kW DC) Mixed use Cumulative':'Mixed Use',
+                                        'Capacity (kW DC) Commercial Cumulative':'Commercial',
+                                        'Capacity (kW DC) Municipal Cumulative':'Municipal',
+                                        'Capacity (kW DC) State/Fed Cumulative':'Other Govt',
+                                        'Capacity (kW DC) Industrial Cumulative':'Industrial',
+                                        'Capacity (kW DC) Agricultural Cumulative':'Agricultural',
+                                        'Capacity (kW DC) Community Solar Cumulative':'Community Solar',
+                                        'Capacity (kW DC) Other Cumulative':'Other'
+                                        }
+                                     )
+    sa_year_sub1 = sa_year_sub1.reset_index()
+    
+    sa_year_sub2 = year_set4[graph_cols2].T
+    sa_year_sub2 = sa_year_sub2.rename(columns={sa_year_sub2.columns[0]:'Sectors'},
+                                     index={'Project Count Residential Cumulative':'Residential',
+                                      'Project Count Multifamily Cumulative':'Multifamily',
+                                        'Project Count Mixed use Cumulative':'Mixed Use',
+                                        'Project Count Commercial Cumulative':'Commercial',
+                                        'Project Count Municipal Cumulative':'Municipal',
+                                        'Project Count State/Fed Cumulative':'Other Govt',
+                                        'Project Count Industrial Cumulative':'Industrial',
+                                        'Project Count Agricultural Cumulative':'Agricultural',
+                                        'Project Count Community Solar Cumulative':'Community Solar',
+                                        'Project Count Other Cumulative':'Other'
+                                        }
+                                     )
+    sa_year_sub2 = sa_year_sub2.reset_index()
+    
+    fig = make_subplots(rows=1,cols=2,specs=[[{'type':'domain'}, {'type':'domain'}]],
+                        subplot_titles=('Share of capacity by sector',
+                                        'Share of projects by sector'),
+                        horizontal_spacing = 0.05,
+                        )
+    
+    fig.add_trace(
+        go.Pie(labels=sa_year_sub1['index'], values=sa_year_sub1['Sectors'].round(0),
+               sort=False,rotation=180,
+               textinfo='label+percent',textfont_size=14,showlegend=False),
+        row=1,col=1)
+    
+    fig.add_trace(
+        go.Pie(labels=sa_year_sub2['index'], values=sa_year_sub2['Sectors'].round(0),
+               sort=False,rotation=180,
+               textinfo='label+percent',textfont_size=14,showlegend=False),
+        row=1,col=2)
+    
+    st.plotly_chart(fig)
+    return year_set4
 
 # function for transportation
 @st.cache_data
@@ -764,7 +895,7 @@ def map_figure(y,d):
 #############################################################################
 # Running the dashboard
 
-dataset, geo = load_data()
+dataset, geo, solar, evs, stations = load_data()
 
 #municipality = st.sidebar.selectbox(
 #    'Which city or town would you like to explore?',
@@ -774,8 +905,8 @@ dataset, geo = load_data()
 #                        min_value=start_year,max_value=end_year,
 #                       value=end_year)
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(['Overview','Demographics',
-                                        'Buildings','Transportation','Waste','Compare'])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(['Overview','Demographics',
+                                        'Buildings','Solar','Transportation','Waste','Compare'])
 
 with tab1:
     st.header('Overview of Energy and Emissions')
@@ -852,6 +983,45 @@ with tab3:
     st.write('Data sources: Mass Save Data, MA DOER, MA DPU, U.S. Census Bureau, U.S. EIA')
 
 with tab4:
+    st.header('Solar Energy Adoption')
+    
+    municipality4 = st.selectbox('Which city or town would you like to explore? \n \
+                                 Click in the box and type the name or scroll through the drop down list.',
+                                 ['Massachusetts'] + dataset['Municipality'].unique().tolist(),
+                                 index=0,
+                                 key='municipality4')
+        
+    # add widget w/ total capacity, n projects, avg project size?
+    total_cap = solar.loc[(solar['City']==municipality4)&(solar['Year']==2023),'Capacity (kW DC) All Cumulative'].round(decimals=0).astype('int').item()
+    total_num = solar.loc[(solar['City']==municipality4)&(solar['Year']==2023),'Project Count All Cumulative'].round(decimals=0).astype('int').item()
+    avg_size = total_cap/total_num
+    est_energy = total_cap*8760*0.13*0.001
+    col1,col2,col3,col4  = st.columns(4)
+    with col1:
+        st.metric(label='Capacity (kW DC):',
+                  value=f'{total_cap:,.0f}'
+                  )
+    with col2:
+        st.metric(label='Number of projects:',
+                  value=f'{total_num:,.0f}'
+                  )
+    with col3:
+        st.metric(label='Average size (kW DC):',
+                  value=f'{avg_size:,.0f}'
+                  )
+    with col4:
+        st.metric(label='Est energy (MWh/year):',
+                  value=f'{est_energy:,.0f}'
+                  )
+    
+    st.text(' ')
+    st.text(' ')
+    # add graphs: new and cumulative capacity, pie by sector cap and n
+    year_set4 = solar_graph(municipality4)
+    
+    st.write('Data Sources: MassCEC Production Tracking System')
+
+with tab5:
     st.header('Transportation Energy and Emissions')
     
     municipality5 = st.selectbox('Which city or town would you like to explore? \n \
@@ -867,8 +1037,8 @@ with tab4:
     
     st.write('Data Sources: MA DOT')
 
-with tab5:
-    st.header('Waste Emissions')
+with tab6:
+    st.header('Waste Emissions: Under construction')
     
     municipality6 = st.selectbox('Which city or town would you like to explore? \n \
                                  Click in the box and type the name or scroll through the drop down list.',
@@ -931,11 +1101,11 @@ with tab5:
     mwra = st.toggle('Is your municipality part of the MWRA?',
                      value=True,key='mwra')
 
-    year_set6 = waste_graph(municipality6,year6)
+    #year_set6 = waste_graph(municipality6,year6)
     
     st.write('Data Sources: MA DEP')
     
-with tab6:
+with tab7:
     st.header('Comparison Tool')
     st.write('Choose up to ten cities and towns to compare.')
     
