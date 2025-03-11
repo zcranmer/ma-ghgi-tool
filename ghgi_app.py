@@ -905,8 +905,9 @@ dataset, geo, solar, evs, stations = load_data()
 #                        min_value=start_year,max_value=end_year,
 #                       value=end_year)
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(['Overview','Demographics',
-                                        'Buildings','Solar','Transportation','Waste','Compare'])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Overview','Demographics',
+                                        'Buildings','Solar','Transportation','Waste',
+                                        'Compare','Targets'])
 
 with tab1:
     st.header('Overview of Energy and Emissions')
@@ -1029,13 +1030,41 @@ with tab5:
                                  ['Massachusetts'] + dataset['Municipality'].unique().tolist(),
                                  index=0,
                                  key='municipality5')
+    
+    evs_subset = evs.loc[(evs['Municipality']==municipality5.upper())&(evs['Year']==2024)&evs['Month']==1,:]
+    bevs = evs_subset.loc[evs_subset['AdvancedVehicleType']=='Electric Vehicle','Count'].sum()
+    phevs = evs_subset.loc[evs_subset['AdvancedVehicleType']=='Plug-in Hybrid Electric','Count'].sum()
+    ghyb = evs_subset.loc[evs_subset['AdvancedVehicleType']=='Hybrid Electric Vehicle','Count'].sum()
+    
+    stations_subset = stations.loc[(stations['City']==municipality5),:]
+    charge_stations = stations_subset.loc[:,'Total Level All Station Count'].max()
+    
+    st.text('Electric vehicle metrics for January 2024.')
+    col1,col2,col3,col4 = st.columns(4)
+    with col1:
+        st.metric(label='EVs:',
+                  value=f'{bevs:,.0f}')
+    with col2:
+        st.metric(label='PHEVs:',
+                  value=f'{phevs:,.0f}')
+    with col3:
+        st.metric(label='Gas Hybrids:',
+                  value=f'{ghyb:,.0f}')
+    with col4:
+        st.metric(label='Charging Stations:',
+                  value=f'{charge_stations:,.0f}')
+    
+    st.text('')
+    st.text('')
+    
     year5 = st.selectbox('Which year would you like to look at?',
                             range(end_year,start_year-1,-1),
                             index=0,
                             key='year5')
+    
     year_set5 = trans_graph(municipality5,year5)
     
-    st.write('Data Sources: MA DOT')
+    st.write('Data Sources: MA DOT Vehicle Census')
 
 with tab6:
     st.header('Waste Emissions: Under construction')
@@ -1107,7 +1136,7 @@ with tab6:
     
 with tab7:
     st.header('Comparison Tool')
-    st.write('Choose up to ten cities and towns to compare.')
+    #st.write('Choose up to ten cities and towns to compare.')
     
     year7 = st.selectbox('Which year would you like to look at?',
                          range(end_year,start_year-1,-1),
@@ -1121,6 +1150,19 @@ with tab7:
                          key='data1')
     
     dataset_year = map_figure(year7,data1)
+
+with tab8:
+    st.header('State Targets')
+    st.subheader('MA has established statewide targets by sector.')
+    
+    target_table = pd.DataFrame({'2025':['29%','24%','18%','53%'],
+                                 '2030':['49%','44%','34%','70%'],
+                                 '2050':['95%','92%','86%','93%']},
+                                index=['Residential Heating and Cooling',
+                                       'Commercial Heating and Cooling',
+                                       'Transportation',
+                                       'Electric Power'])
+    st.table(data=target_table)
     
 
 
