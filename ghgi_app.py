@@ -186,7 +186,7 @@ def my_graph1(m,y):
                                         'Share of emissions by sector in MTCO2e',
                                         'Share of energy by fuel in MMBTU',
                                         'Share of energy by sector in MMBTU'),
-                        vertical_spacing=0.1
+                        vertical_spacing=0.2
                         )
     fig.add_trace(
         go.Pie(labels=year_sub1['index'], values=year_sub1['Emissions'].round(0),
@@ -210,10 +210,19 @@ def my_graph1(m,y):
                textinfo='label+percent',textfont_size=14),
         row=2,col=2)
     
-    fig.update_layout(title=dict(text='Shares of energy and emissions in '+m+' in '+str(y),font=dict(size=28)),
+    fig.update_layout(title=dict(text='Shares of energy and emissions in '+m+' in '+str(y),
+                                 font=dict(size=28),
+                                 y = 1,
+                                 yanchor='top',
+                                 ),
+                      #title_pad_b = 20,
                       height=750,width=1000,
                       showlegend=False
                       )
+    fig.layout.annotations[0].update(y=1.05)
+    fig.layout.annotations[1].update(y=1.05)
+    fig.layout.annotations[2].update(y=0.46)
+    fig.layout.annotations[3].update(y=0.46)
     
     st.plotly_chart(fig)
     return year_set
@@ -252,7 +261,7 @@ def m_demog_graph(m2):
                       yaxis3=dict(range=[0,1.4*(subset['Median household income'].max())],
                                   title=dict(text='$',font=dict(size=18)),
                                   tickfont=dict(size=14)),
-                      height=1200,width=700
+                      height=1200,width=500
                       )
     fig.update_xaxes(title=dict(text='Year',font=dict(size=18)),
                      tickvals=list(range(start_year,end_year+1)),
@@ -487,7 +496,7 @@ def bldg_graph2(m3,y3):
                                         #'Share of commercial employment by sector'
                                         ),
                         horizontal_spacing = 0.03,
-                        vertical_spacing = 0.1
+                        vertical_spacing = 0.2
                         )
     fig.add_trace(
         go.Pie(labels=rf_year_sub['index'], values=rf_year_sub['Emissions'].round(0),
@@ -511,10 +520,17 @@ def bldg_graph2(m3,y3):
     #           textinfo='label+percent',textfont_size=14),
     #    row=2,col=2)
     
-    fig.update_layout(title=dict(text='Share of emissions and sources in '+m3+' in '+str(y3),font=dict(size=28)),
+    fig.update_layout(title=dict(text='Share of emissions and sources in '+m3+' in '+str(y3),
+                                 font=dict(size=28),
+                                 y = 1,
+                                 yanchor='top',
+                                 ),
                       height=750,width=1000,
                       showlegend=False
                       )
+    fig.layout.annotations[0].update(y=1.05)
+    fig.layout.annotations[1].update(y=1.05)
+    fig.layout.annotations[2].update(y=0.46)
 
     st.plotly_chart(fig)
     return year_set
@@ -568,9 +584,13 @@ def solar_graph(m4):
                                   y=-0.4,
                                   xanchor="right",
                                   x=1,
-                                  font=dict(size=14))
+                                  font=dict(size=14)),
+                      height = 500, width = 1000
                       )
     st.plotly_chart(fig)
+    
+    st.text('')
+    st.text('')
     
     # sector pie charts
     year_set4 = solar[(solar['City']==m4)&(solar['Year']==2023)]
@@ -646,6 +666,10 @@ def solar_graph(m4):
                textinfo='label+percent',textfont_size=14,showlegend=False),
         row=1,col=2)
     
+    fig.update_layout(height = 500, width = 1000)
+    fig.layout.annotations[0].update(y=1.1)
+    fig.layout.annotations[1].update(y=1.1)
+    
     st.plotly_chart(fig)
     return year_set4
 
@@ -658,6 +682,7 @@ def trans_graph0(m5):
                         subplot_titles=('Vehicle counts over time',
                                         'Vehicle miles traveled over time'),
                         horizontal_spacing = 0.1,
+                        vertical_spacing = 0.2
                         )
     
     # Line graph of vehicle counts over time
@@ -1129,8 +1154,11 @@ with tab1:
         
     subset1 = m_graph1(municipality1)
     
-    year1 = st.selectbox('Which year would you like to look at?',
-                         range(end_year,2018,-1),
+    st.text(' ')
+    st.text(' ')
+    st.markdown('**Which year would you like to look at?**')
+    year1 = st.selectbox('Choose a year from the drop down menu',
+                         range(end_year,2019,-1),
                          index=0,
                          key='year1')
     
@@ -1176,7 +1204,10 @@ with tab3:
     
     subset3 = bldg_graph1(municipality3)
     
-    year3 = st.selectbox('Which year would you like to look at?',
+    st.text(' ')
+    st.text(' ')
+    st.markdown('**Which year would you like to look at?**')
+    year3 = st.selectbox('Choose a year from the drop down menu',
                             range(end_year,start_year-1,-1),
                             index=0,
                             key='year3')
@@ -1194,6 +1225,7 @@ with tab3:
 with tab4:
     st.header('Solar Energy Adoption')
     st.text(' ')
+    st.markdown('Note: Solar data is from the MassCEC PTS as of Feb 2024 and data for 2023 and 2024 are incomplete.')
     st.text(' ')
     st.markdown('**Which city or town would you like to explore?**')
     
@@ -1282,9 +1314,9 @@ with tab5:
     
     st.text('')
     st.text('')
-    
-    year5 = st.selectbox('Which year would you like to look at?',
-                            range(end_year,2018,-1),
+    st.markdown('**Which year would you like to look at?**')
+    year5 = st.selectbox('Choose a year from the drop down menu',
+                            range(end_year,2019,-1),
                             index=0,
                             key='year5')
     
@@ -1388,7 +1420,8 @@ with tab7:
 
 with tab8:
     st.header('State Targets')
-    st.subheader('MA has established statewide targets by sector.')
+    st.subheader('MA has established statewide emissions targets by sector.')
+    st.markdown('Percent reduction in CO2e relative to 1990.')
     
     target_table = pd.DataFrame({'2025':['29%','24%','18%','53%'],
                                  '2030':['49%','44%','34%','70%'],
