@@ -6,7 +6,7 @@ MA Greenhouse Gas Inventory Tool
 
 import streamlit as st
 import pandas as pd
-#import numpy as np
+import numpy as np
 import json
 import plotly.express as px
 import plotly.graph_objects as go
@@ -67,8 +67,9 @@ def load_data():
     
     df_solar = pd.read_csv('datasets/solar_data.csv')
     df_stations = pd.read_csv('datasets/ev_stations.csv')
+    df_hp = pd.read_excel('datasets/masssave hp 2019-2023.xlsx')
     
-    return dataset,gdf,df_solar,df_stations
+    return dataset,gdf,df_solar,df_stations,df_hp
 
 # function for annual emissions graph(s)
 @st.cache_data
@@ -678,51 +679,42 @@ def solar_graph(m4):
 def trans_graph0(m5):
     subset = dataset.loc[(dataset['Municipality']==m5)&(dataset['Year']>2019),:]
     
-    fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'}, {'type':'scatter'}]],
+    fig = make_subplots(rows=2,cols=2,specs=[[{'type':'scatter'}, {'type':'scatter'}],
+                                             [{'type':'scatter'}, {'type':'scatter'}]],
                         subplot_titles=('Vehicle counts over time',
-                                        'Vehicle miles traveled over time'),
+                                        'Vehicle miles traveled over time',
+                                        'Energy use over time',
+                                        'Emissions over time'),
                         horizontal_spacing = 0.1,
                         vertical_spacing = 0.2
                         )
     
     # Line graph of vehicle counts over time
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' Count    Fossil Fuel  Commercial 01',
-                                          ' Count    Fossil Fuel  Municipal 01',
-                                          ' Count    Fossil Fuel  Passenger 01',
-                                          ' Count    Fossil Fuel  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year,y=subset['Count FFs 01'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   showlegend=False,
+                   showlegend=False,legendgroup = '1',
                    name='Fossil Fuel',line=dict(color=colors_vehicles['Fossil Fuel'])
                    ),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' Count    Hybrid Electric Vehicle  Commercial 01',
-                                          ' Count    Hybrid Electric Vehicle  Municipal 01',
-                                          ' Count    Hybrid Electric Vehicle  Passenger 01',
-                                          ' Count    Hybrid Electric Vehicle  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year,y=subset['Count GHYs 01'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   showlegend=False,
+                   showlegend=False,legendgroup = '1',
                    name='Gas Hybrid',line=dict(color=colors_vehicles['Hybrid Electric'])
                    ),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' Count    Plug in Hybrid Electric  Commercial 01',
-                                          ' Count    Plug in Hybrid Electric  Municipal 01',
-                                          ' Count    Plug in Hybrid Electric  Passenger 01',
-                                          ' Count    Plug in Hybrid Electric  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year,y=subset['Count PHEVs 01'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   showlegend=False,
+                   showlegend=False,legendgroup = '1',
                    name='Plug-in Hybrid',line=dict(color=colors_vehicles['Plug-in Hybrid'])
                    ),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' Count    Electric Vehicle  Commercial 01',
-                                          ' Count    Electric Vehicle  Municipal 01',
-                                          ' Count    Electric Vehicle  Passenger 01',
-                                          ' Count    Electric Vehicle  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year,y=subset['Count EVs 01'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   showlegend=False,
+                   showlegend=False,legendgroup = '1',
                    name='Electric',line=dict(color=colors_vehicles['Electric Vehicle'])
                    ),
                    row=1,col=1)
@@ -732,7 +724,7 @@ def trans_graph0(m5):
                                           ' Count    Fuel Cell Electric Vehicle  Passenger 01',
                                           ' Count    Fuel Cell Electric Vehicle  State 01']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   showlegend=False,
+                   showlegend=False,legendgroup = '1',
                    name='Fuel Cell',line=dict(color=colors_vehicles['Fuel Cell'])
                    ),
                    row=1,col=1)
@@ -744,6 +736,7 @@ def trans_graph0(m5):
                                           ' DailyVMT    Fossil Fuel  Passenger 01',
                                           ' DailyVMT    Fossil Fuel  State 01']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   legendgroup = '1',
                    name='Fossil Fuel',line=dict(color=colors_vehicles['Fossil Fuel'])
                    ),
                    row=1,col=2)
@@ -753,6 +746,7 @@ def trans_graph0(m5):
                                           ' DailyVMT    Hybrid Electric Vehicle  Passenger 01',
                                           ' DailyVMT    Hybrid Electric Vehicle  State 01']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   legendgroup = '1',
                    name='Gas Hybrid',line=dict(color=colors_vehicles['Hybrid Electric'])
                    ),
                    row=1,col=2)
@@ -762,6 +756,7 @@ def trans_graph0(m5):
                                           ' DailyVMT    Plug in Hybrid Electric  Passenger 01',
                                           ' DailyVMT    Plug in Hybrid Electric  State 01']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   legendgroup = '1',
                    name='Plug-in Hybrid',line=dict(color=colors_vehicles['Plug-in Hybrid'])
                    ),
                    row=1,col=2)
@@ -771,6 +766,7 @@ def trans_graph0(m5):
                                           ' DailyVMT    Electric Vehicle  Passenger 01',
                                           ' DailyVMT    Electric Vehicle  State 01']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   legendgroup = '1',
                    name='Electric',line=dict(color=colors_vehicles['Electric Vehicle'])
                    ),
                    row=1,col=2)
@@ -780,14 +776,81 @@ def trans_graph0(m5):
                                           ' DailyVMT    Fuel Cell Electric Vehicle  Passenger 01',
                                           ' DailyVMT    Fuel Cell Electric Vehicle  State 01']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   legendgroup = '1',
                    name='Fuel Cell',line=dict(color=colors_vehicles['Fuel Cell'])),
                    row=1,col=2)
     
+    # Transportation energy
+    fig.add_trace(
+        go.Scatter(x=subset.Year[:-1],y=subset['Total Gasoline (MMBTU)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   showlegend=False,legendgroup = '2',
+                   name='Gasoline',line=dict(color=colors_fuel['Gasoline'])
+                   ),
+                   row=2,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year[:-1],y=subset['Total Diesel (MMBTU)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   showlegend=False,legendgroup = '2',
+                   name='Diesel',line=dict(color=colors_fuel['Diesel'])
+                   ),
+                   row=2,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year[:-1],y=subset['Total Vehicle Electricity (MMBTU)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   showlegend=False,legendgroup = '2',
+                   name='Electricity',line=dict(color=colors_fuel['Electricity'])
+                   ),
+                   row=2,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year[:-1],y=subset[['Total Public Transportation (MMBTU)']].sum(axis=1),
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   showlegend=False,legendgroup = '2',
+                   name='Electricity',line=dict(color='lightsteelblue')
+                   ),
+                   row=2,col=1)
+    
+    # Transportation emissions
+    fig.add_trace(
+        go.Scatter(x=subset.Year[:-1],y=subset['Total Gasoline (MTCO2e)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   legendgroup = '2',
+                   name='Gasoline',line=dict(color=colors_fuel['Gasoline'])
+                   ),
+                   row=2,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year[:-1],y=subset['Total Diesel (MTCO2e)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   legendgroup = '2',
+                   name='Diesel',line=dict(color=colors_fuel['Diesel'])
+                   ),
+                   row=2,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year[:-1],y=subset['Total Vehicle Electricity (MTCO2e)'],
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   legendgroup = '2',
+                   name='Electricity',line=dict(color=colors_fuel['Electricity'])
+                   ),
+                   row=2,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year[:-1],y=subset[['Total Public Transportation (MTCO2e)',
+                                                'MBTA Diesel (MTCO2e)','MBTA Electricity (MTCO2e)','MBTA CNG (MTCO2e)'
+                                                ]].sum(axis=1),
+                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
+                   legendgroup = '2',
+                   name='Public Transit',line=dict(color='lightsteelblue')
+                   ),
+                   row=2,col=2)
+    
     fig.update_layout(hovermode='x',
-                      title=dict(text='Share of vehicle and miles driven in '+m5,font=dict(size=28)),
+                      title=dict(text='Share of vehicles and miles driven in '+m5,font=dict(size=28)),
                       yaxis=dict(title=dict(text='Vehicles',font=dict(size=18),standoff=10),
                                  tickfont=dict(size=14)),
                       yaxis2=dict(title=dict(text='Daily VMT',font=dict(size=18),standoff=0),
+                                 tickfont=dict(size=14)),
+                      yaxis3=dict(title=dict(text='MMBTU',font=dict(size=18),standoff=10),
+                                 tickfont=dict(size=14)),
+                      yaxis4=dict(title=dict(text='MTCO2e',font=dict(size=18),standoff=0),
                                  tickfont=dict(size=14)),
                       xaxis=dict(title=dict(text='Year',font=dict(size=18)),
                                  tickvals=subset.Year,
@@ -795,7 +858,14 @@ def trans_graph0(m5):
                       xaxis2=dict(title=dict(text='Year',font=dict(size=18)),
                                  tickvals=subset.Year,
                                  tickfont=dict(size=14)),
-                      height=400,width=1000,
+                      xaxis3=dict(title=dict(text='Year',font=dict(size=18)),
+                                 tickvals=subset.Year,
+                                 tickfont=dict(size=14)),
+                      xaxis4=dict(title=dict(text='Year',font=dict(size=18)),
+                                 tickvals=subset.Year,
+                                 tickfont=dict(size=14)),
+                      legend_tracegroupgap = 280,
+                      height=800,width=1000,
                       )
 
     st.plotly_chart(fig)
@@ -805,94 +875,78 @@ def trans_graph0(m5):
 def trans_graph(m5,y5):
     subset = dataset[(dataset['Municipality']==m5)&(dataset['Year']>2019)]
     year_set5 = dataset[(dataset['Year']==y5)&(dataset['Municipality']==m5)]
+    
+    # Transportation energy pie chart
+    graph_cols = ['Residential Gasoline (MMBTU)','Residential Diesel (MMBTU)','Residential Vehicle Electricity (MMBTU)',
+                  'Commercial Gasoline (MMBTU)','Commercial Diesel (MMBTU)','Commercial Vehicle Electricity (MMBTU)',
+                  'Municipal Gasoline (MMBTU)','Municipal Diesel (MMBTU)','Municipal Vehicle Electricity (MMBTU)',
+                  'Total Public Transportation (MMBTU)'
+                  ]
+
+    rf_year_sub = year_set5[graph_cols].T
+    rf_year_sub = rf_year_sub.rename(columns={rf_year_sub.columns[0]:'Energy'},
+                                     index={'Residential Gasoline (MMBTU)':'Passenger Gasoline',
+                                            'Residential Diesel (MMBTU)':'Passenger Diesel',
+                                      'Residential Vehicle Electricity (MMBTU)':'Passenger Electricity',
+                                        'Commercial Gasoline (MMBTU)':'Commercial Gasoline',
+                                        'Commercial Diesel (MMBTU)':'Commercial Diesel',
+                                        'Commercial Vehicle Electricity (MMBTU)':'Commercial Electricity',
+                                        'Municipal Gasoline (MMBTU)':'Municipal Gasoline',
+                                        'Municipal Diesel (MMBTU)':'Municipal Diesel',
+                                        'Municipal Vehicle Electricity (MMBTU)':'Municipal Electricity',
+                                        'Total Public Transportation (MMBTU)':'Public Transit'}
+                                     )
+    rf_year_sub = rf_year_sub.reset_index()
+    
+    threshold_v = rf_year_sub['Energy'].sum()*0.04 # aggregate any categories that are less than 4% of the total
+    rf_row_other = rf_year_sub.loc[rf_year_sub['Energy']<threshold_v].sum(numeric_only=True)
+    rf_row_other = rf_row_other.rename('Energy')
+    rf_row_other = rf_row_other.rename(index={rf_row_other.index[0]:'Other'}).reset_index()
+    rf_year_sub_t = rf_year_sub.loc[rf_year_sub['Energy']>=threshold_v]
+    rf_year_sub_s = pd.concat([rf_year_sub_t,rf_row_other])
+    
     # Transportation emissions pie chart
-    graph_cols = ['Residential Gasoline (MTCO2e)','Residential Vehicle Electricity (MTCO2e)',
-                  'Commercial Gasoline (MTCO2e)','Commercial Vehicle Electricity (MTCO2e)',
-                  'Municipal Gasoline (MTCO2e)','Municipal Vehicle Electricity (MTCO2e)']
+    graph_cols = ['Residential Gasoline (MTCO2e)','Residential Diesel (MTCO2e)','Residential Vehicle Electricity (MTCO2e)',
+                  'Commercial Gasoline (MTCO2e)','Commercial Diesel (MTCO2e)','Commercial Vehicle Electricity (MTCO2e)',
+                  'Municipal Gasoline (MTCO2e)','Municipal Diesel (MTCO2e)','Municipal Vehicle Electricity (MTCO2e)',
+                  'Total Public Transportation (MTCO2e)'
+                  ]
 
     rf_year_sub = year_set5[graph_cols].T
     rf_year_sub = rf_year_sub.rename(columns={rf_year_sub.columns[0]:'Emissions'},
                                      index={'Residential Gasoline (MTCO2e)':'Passenger Gasoline',
+                                            'Residential Diesel (MTCO2e)':'Passenger Diesel',
                                       'Residential Vehicle Electricity (MTCO2e)':'Passenger Electricity',
                                         'Commercial Gasoline (MTCO2e)':'Commercial Gasoline',
+                                        'Commercial Diesel (MTCO2e)':'Commercial Diesel',
                                         'Commercial Vehicle Electricity (MTCO2e)':'Commercial Electricity',
                                         'Municipal Gasoline (MTCO2e)':'Municipal Gasoline',
-                                        'Municipal Vehicle Electricity (MTCO2e)':'Municipal Electricity'}
+                                        'Municipal Diesel (MTCO2e)':'Municipal Diesel',
+                                        'Municipal Vehicle Electricity (MTCO2e)':'Municipal Electricity',
+                                        'Total Public Transportation (MTCO2e)':'Public Transit'}
                                      )
     rf_year_sub = rf_year_sub.reset_index()
     
-    #print(rf_year_sub)
     threshold_v = rf_year_sub['Emissions'].sum()*0.04 # aggregate any categories that are less than 4% of the total
-    #print('threshold: '+str(threshold_v))
     rf_row_other = rf_year_sub.loc[rf_year_sub['Emissions']<threshold_v].sum(numeric_only=True)
     rf_row_other = rf_row_other.rename('Emissions')
     rf_row_other = rf_row_other.rename(index={rf_row_other.index[0]:'Other'}).reset_index()
-    #print(rf_row_other)
     rf_year_sub_t = rf_year_sub.loc[rf_year_sub['Emissions']>=threshold_v]
     rf_year_sub_f = pd.concat([rf_year_sub_t,rf_row_other])
-    #print(rf_year_sub_f)
     
-    fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'}, {'type':'domain'}]],
-                        subplot_titles=('Share of transportation fuel over time',
+    fig = make_subplots(rows=1,cols=2,specs=[[{'type':'domain'}, {'type':'domain'}]],
+                        subplot_titles=('Share of fuel by sector',
                                         'Share of emissions by fuel and sector'),
                         horizontal_spacing = 0.1,
                         )
+    # Energy pie chart
+    fig.add_trace(
+        go.Pie(labels=rf_year_sub_s['index'], values=rf_year_sub_s['Energy'].round(0),
+               sort=False,rotation=180,
+               textinfo='label+percent',textfont_size=14,showlegend=False),
+        row=1,col=1)
     
-    fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Residential Gasoline (MMBTU)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   name='Passenger Gasoline',line=dict(color=colors_fuel['Gasoline'])
-                   ),
-                   row=1,col=1)
-    fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Residential Diesel (MMBTU)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   name='Passenger Diesel',line=dict(color=colors_fuel['Diesel'])
-                   ),
-                   row=1,col=1)
-    fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Residential Vehicle Electricity (MMBTU)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   name='Passenger Electricity',line=dict(color=colors_fuel['Electricity'])
-                   ),
-                   row=1,col=1)
-    fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Commercial Gasoline (MMBTU)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   name='Commercial Gasoline',line=dict(color=colors_fuel['Gasoline'])
-                   ),
-                   row=1,col=1)
-    fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Commercial Diesel (MMBTU)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   name='Commercial Diesel',line=dict(color=colors_fuel['Diesel'])
-                   ),
-                   row=1,col=1)
-    fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Commercial Vehicle Electricity (MMBTU)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   name='Commercial Electricity',line=dict(color=colors_fuel['Electricity'])
-                   ),
-                   row=1,col=1)
-    fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Municipal Gasoline (MMBTU)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   name='Municipal Gasoline',line=dict(color=colors_fuel['Gasoline'])
-                   ),
-                   row=1,col=1)
-    fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Municipal Diesel (MMBTU)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   name='Municipal Diesel',line=dict(color=colors_fuel['Diesel'])
-                   ),
-                   row=1,col=1)
-    fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Municipal Vehicle Electricity (MMBTU)'],
-                   hoverinfo='x+y+name',mode='lines',stackgroup='one',
-                   name='Municipal Electricity',line=dict(color=colors_fuel['Electricity'])
-                   ),
-                   row=1,col=1)
-    
+    # Emissions pie chart
     fig.add_trace(
         go.Pie(labels=rf_year_sub_f['index'], values=rf_year_sub_f['Emissions'].round(0),
                sort=False,rotation=180,
@@ -909,8 +963,6 @@ def trans_graph(m5,y5):
                       )
 
     st.plotly_chart(fig)
-    
-    # plot trends in VMT and # of vehicles
 
 # function for waste
 @st.cache_data
@@ -1105,7 +1157,14 @@ def map_figure(y,d):
 #############################################################################
 # Running the dashboard
 
-dataset, geo, solar, stations = load_data()
+dataset, geo, solar, stations, hps = load_data()
+
+if 'df' not in st.session_state:
+    st.session_state.df = dataset
+if 'df_solar' not in st.session_state:
+    st.session_state.df_solar = solar
+if 'df_hp' not in st.session_state:
+    st.session_state.df_hp = hps
 
 #municipality = st.sidebar.selectbox(
 #    'Which city or town would you like to explore?',
@@ -1165,9 +1224,6 @@ with tab1:
     # emissions pie charts
     
     year_set1 = my_graph1(municipality1,year1)
-    
-    #st.write('Note: Commercial & Industrial includes emissions from industrial \
-    #         processes as well as any on site combustion at industrial facilities.')
 
 
 with tab2:
@@ -1200,7 +1256,48 @@ with tab3:
                            'Clarksburg','Dover','Leyden','Mendon',
                            'Millville','Montgomery','Monroe','Oxford',
                            'Rockport','Sterling','Sunderland','Whately']:
-        st.text('Note: Some data may be missing from Mass Save Data due to a small number of customers.')
+        st.markdown('Note: Some data may be missing from Mass Save Data due to a small number of customers.')
+        
+    # calc # of heat pumps or other metrics to show
+    hps = dataset.loc[(dataset['Municipality']==municipality3)&(dataset['Year']==2023),'Cumulative heat pumps all (accounts)']
+    if hps.isna().item():
+        hps = 'unknown'
+    else: hps = hps.astype('int').item()
+    households = dataset.loc[(dataset['Municipality']==municipality3)&(dataset['Year']==2023),'Households'].astype('int').item()
+    ms_participation = (100*pd.to_numeric(dataset.loc[(dataset['Municipality']==municipality3)&(dataset['Year']==2023),'Cumulative location participation rate [%] (4)'],errors='coerce'))
+    if ms_participation.isna().item():
+        ms_participation = 'unknown'
+    else: ms_participation = ms_participation.item()
+    if dataset.loc[(dataset['Municipality']==municipality3)&(dataset['Year']==2023),'CEA Y/N'].item() == 'Yes':
+        cea = 'Yes'
+    else: cea = 'No'
+    
+    st.text('')
+    st.text('')
+    st.markdown('Building metrics as of 2023.')
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        try:
+            st.metric(label= 'Mass Save Participation %',
+                      value = f'{ms_participation:,.0f}')
+        except:
+            st.metric(label = 'Mass Save Participation',
+                      value = ms_participation)
+    with col2:
+        try:
+            st.metric(label = 'Heat pumps',
+                      value = f'{hps:,.0f}')
+        except:
+            st.metric(label = 'Heat pumps',
+                      value = hps)
+    with col3:
+        st.metric(label = 'Households',
+                  value = f'{households:,.0f}')
+    with col4:
+        st.metric(label = 'Community aggregation?',
+                  value = cea)
+    # add utility emissions factor in 4th column?
     
     subset3 = bldg_graph1(municipality3)
     
@@ -1278,24 +1375,15 @@ with tab5:
     st.text(' ')
     st.text(' ')
     
-    evs_subset = dataset.loc[(dataset['Municipality']==municipality5)&(dataset['Year']==2024),:]
-    bevs = evs_subset.loc[:,[' Count    Electric Vehicle  Commercial 01',
-                             ' Count    Electric Vehicle  Municipal 01',
-                             ' Count    Electric Vehicle  Passenger 01',
-                             ' Count    Electric Vehicle  State 01']].sum(axis=1).item()
-    phevs = evs_subset.loc[:,[' Count    Plug in Hybrid Electric  Commercial 01',
-                             ' Count    Plug in Hybrid Electric  Municipal 01',
-                             ' Count    Plug in Hybrid Electric  Passenger 01',
-                             ' Count    Plug in Hybrid Electric  State 01']].sum(axis=1).item()
-    ghyb = evs_subset.loc[:,[' Count    Hybrid Electric Vehicle  Commercial 01',
-                             ' Count    Hybrid Electric Vehicle  Municipal 01',
-                             ' Count    Hybrid Electric Vehicle  Passenger 01',
-                             ' Count    Hybrid Electric Vehicle  State 01']].sum(axis=1).item()
+    evs_subset = dataset.loc[(dataset['Municipality']==municipality5)&(dataset['Year']==2025),:]
+    bevs = evs_subset.loc[:,'Count EVs 01'].item()
+    phevs = evs_subset.loc[:,'Count PHEVs 01'].item()
+    ghyb = evs_subset.loc[:,'Count GHYs 01'].item()
     
     stations_subset = stations.loc[(stations['City']==municipality5),:]
     charge_stations = stations_subset.loc[:,'Total Level All Station Count'].max()
     
-    st.markdown('Electric vehicle metrics for January 2024.')
+    st.markdown('Electric vehicle metrics for January 2025.')
     col1,col2,col3,col4 = st.columns(4)
     with col1:
         st.metric(label='EVs:',
@@ -1314,17 +1402,19 @@ with tab5:
     
     st.text('')
     st.text('')
+    set5 = trans_graph0(municipality5)
+    
+    st.text('')
+    st.text('')
     st.markdown('**Which year would you like to look at?**')
     year5 = st.selectbox('Choose a year from the drop down menu',
                             range(end_year,2019,-1),
                             index=0,
                             key='year5')
     
-    set5 = trans_graph0(municipality5)
-    
     year_set5 = trans_graph(municipality5,year5)
     
-    st.write('Data Sources: MA DOT Vehicle Census')
+    st.write('Data Sources: MA DOT Vehicle Census, MAPC MBTA data, FTA National Transit Database')
 
 with tab6:
     st.header('Waste Emissions: Under construction')
