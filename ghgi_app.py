@@ -11,7 +11,7 @@ import json
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import streamlit_analytics2 as streamlit_analytics
+#import streamlit_analytics2 as streamlit_analytics
 
 start_year = 2017
 end_year = 2023
@@ -1156,9 +1156,9 @@ else:
     stations = st.session_state.df_stations
     hps = st.session_state.df_hp
 
-with streamlit_analytics.track():
-    st.markdown('**Which city or town would you like to explore?**')
-    municipality = st.selectbox('Click in the box and type the name or scroll through the drop down list.',
+#with streamlit_analytics.track():
+st.markdown('**Which city or town would you like to explore?**')
+municipality = st.selectbox('Click in the box and type the name or scroll through the drop down list.',
                              dataset['Municipality'].unique().tolist(),
                              index=0,
                              key='local')
