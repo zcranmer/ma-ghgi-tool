@@ -54,8 +54,8 @@ def my_graph1(m,y,dataset,colors_fuel):
                   'Total Propane (MTCO2e)','Total Fuel Oil (MTCO2e)',
                   'Total Gasoline (MTCO2e)',
                   'Total Diesel (MTCO2e)',
-                  #'Solid Waste Emissions (MTCO2e)',
-                  #'Wastewater Emissions (MTCO2e)'
+                  'Total Solid Waste Emissions (MTCO2e)',
+                  'Total Wastewater Emissions (MTCO2e)'
                   ]
     year_sub1 = year_set[graph_cols1].T
     year_sub1 = year_sub1.rename(columns={year_sub1.columns[0]:'Emissions'},
@@ -65,8 +65,8 @@ def my_graph1(m,y,dataset,colors_fuel):
                                          'Total Propane (MTCO2e)':'Propane',
                                          'Total Gasoline (MTCO2e)':'Gasoline',
                                          'Total Diesel (MTCO2e)':'Diesel',
-                                         #'Solid Waste Emissions (MTCO2e)':'Solid Waste',
-                                         #'Wastewater Emissions (MTCO2e)':'Wastewater'
+                                         'Total Solid Waste Emissions (MTCO2e)':'Solid Waste',
+                                         'Total Wastewater Emissions (MTCO2e)':'Wastewater'
                                          }
                                )
     year_sub1 = year_sub1.reset_index()
@@ -75,7 +75,7 @@ def my_graph1(m,y,dataset,colors_fuel):
                    'Total Commercial & Industrial Buildings (MTCO2e)',
                    'Total Transportation (MTCO2e)',
                    #'Public Transit Total (MTCO2e)',
-                   #'Waste Emissions (MTCO2e)'
+                   'Total Waste (MTCO2e)'
                    ]
     year_sub2 = year_set[graph_cols2].T
     year_sub2 = year_sub2.rename(columns={year_sub2.columns[0]:'Emissions'},
@@ -83,7 +83,7 @@ def my_graph1(m,y,dataset,colors_fuel):
                                       'Total Commercial & Industrial Buildings (MTCO2e)':'Commercial & Industrial',
                                       'Total Transportation (MTCO2e)':'Transportation',
                                       #'Public Transit Total (MTCO2e)':'Public Transit',
-                                      #'Waste Emissions (CO2e)':'Waste'
+                                      'Total Waste (MTCO2e)':'Waste'
                                       }
                                    )
     year_sub2 = year_sub2.reset_index()

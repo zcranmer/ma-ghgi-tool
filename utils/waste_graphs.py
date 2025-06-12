@@ -11,29 +11,32 @@ from plotly.subplots import make_subplots
 
 # function for waste
 @st.cache_data
-def waste_graph(m,y,dataset,colors_waste):
-    subset = dataset[dataset['Municipality']==m]
-    year_set = dataset[(dataset['Year']==y)&(dataset['Municipality']==m)]
+def waste_graph(m,landfill,mwra,septic,dataset,colors_waste):
+    subset = dataset[(dataset['Municipality']==m)&(dataset['Year']<2024)]
     
     if m == 'Massachusetts':
-        landfill = 1
-        incinerator = 1
-        mwra = 1
-        wwtp = 1
-        septic = 1
+        landfill_adj = 1
+        incinerator_adj = 1
+        mwra_adj = 1
+        wwtp_adj = 1
+        septic_adj = 1
     else:
-        incinerator = 1-landfill
-        wwtp = 1-septic
+        landfill_adj = (landfill/100)
+        incinerator_adj = ((100-landfill)/100)
+        mwra_adj = mwra
+        wwtp_adj = ((100-septic)/100)
+        septic_adj = (septic/100)
     
+    # Overall waste emissions
     fig = make_subplots(rows=1,cols=1)
     # solid waste emissions
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Landfill (MTCO2e)'],
+        go.Scatter(x=subset.Year,y=subset['Landfill (MTCO2e)']*landfill_adj,
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Landfill',line=dict(color=colors_waste['Trash L'])),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Incineration (MTCO2e)'],
+        go.Scatter(x=subset.Year,y=subset['Incineration (MTCO2e)']*incinerator_adj,
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Incinerator',line=dict(color=colors_waste['Trash I'])),
                    row=1,col=1)
@@ -43,17 +46,17 @@ def waste_graph(m,y,dataset,colors_waste):
                    name='Compost',line=dict(color=colors_waste['Organics'])),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['MWRA AD (MTCO2e)'],
+        go.Scatter(x=subset.Year,y=subset['MWRA AD (MTCO2e)']*mwra_adj,
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Wastewater w/AD',line=dict(color=colors_waste['Wastewater AD'])),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['WWTP (MTCO2e)'],
+        go.Scatter(x=subset.Year,y=subset['WWTP (MTCO2e)']*wwtp_adj,
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Wastewater',line=dict(color=colors_waste['Wastewater'])),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Septic (MTCO2e)'],
+        go.Scatter(x=subset.Year,y=subset['Septic (MTCO2e)']*septic_adj,
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    name='Septic',line=dict(color=colors_waste['Septic'])),
                    row=1,col=1)
@@ -67,7 +70,11 @@ def waste_graph(m,y,dataset,colors_waste):
                       height=600,width=1000)
     st.plotly_chart(fig)
     
-    
+@st.cache_data
+def waste_graph1(m,y,landfill,mwra,septic,dataset,colors_waste):
+    subset = dataset[(dataset['Municipality']==m)&(dataset['Year']<2024)]
+    year_set = dataset[(dataset['Year']==y)&(dataset['Municipality']==m)]    
+    # Solid waste streams
     fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'}, {'type':'domain'}],
                                              ],
                         subplot_titles=('Solid waste over time',
@@ -127,3 +134,45 @@ def waste_graph(m,y,dataset,colors_waste):
     #fig.layout.update(showlegend=False)
 
     st.plotly_chart(fig)
+    
+# incinerator_towns = ['Bedford','Burlington','Chelmsford','Dracut','Essex', # Covanta Haverhill contract communities
+#                      'Groton','Harvard','Haverhill','Littleton','Lynnfield',
+#                      'Middleton','North Reading','Peabody','Reading','Stoneham',
+#                      'Tewksbury','Tyngsboro','Wakefield','Westford','West Newbury',
+#                      'Winchester',
+#                      # SEMASS collects trash from nearly 40 communities in Southeast MA, Cape Cod, and Boston metro area, but not listed in report
+#                      'Quincy','Braintree','Weymouth','Hingham','Cohasset',
+#                      'Scituate','Norwell','Hanover','Avon','Stoughton',
+#                      'Sharon','Dighton','Berkley','Bridgewater','Kingston',
+#                      'Plymouth','Carver','Wareham','Marion','Rochester',
+#                      'Acushnet','Fairhaven','Sandwich','Yarmouth','Chatham',
+#                      'Eastham','Truro',
+#                      #Wheelabrator Millbury
+#                      'Auburn','Blackstone','Dedham','Dover','East Brookfield',
+#                      'Franklin','Grafton','Holden','Holliston','Hopedale',
+#                      'Hopkinton','Maynard','Medfield','Medway','Mendon',
+#                      'Milford','Millbury','Millis','Millville','Natick',
+#                      'Needham','Newton','Northborough','Norfolk','Mansfield',
+#                      'Paxton','Princeton','Rutland','Sherborn','Shrewsbury',
+#                      'Southborough','Spencer','Sutton','Upton','Walpole',
+#                      'Westborough','Weston','Westwood','Worcester',
+#                      # Wheelabrator North Andover
+#                      'Acton','Amesbury','Arlington','Belmont','Billerica',
+#                      'Boxborough','Carlisle','Hamilton','Ipswich','Lexington',
+#                      'Lincoln','Lowell','Manchester','Merrimac','Newburyport',
+#                      'North Andover','Pepperell','Salisbury','Waltham','Watertown',
+#                      'Wenham','Wilmington','Winchester',
+#                      # Wheelabrator Saugus
+#                      'Boston','Chelsea','Everett','Lynn','Manchester',
+#                      'Newton','Revere','Saugus','Somerville'
+#                      ]
+
+# mwra_towns = ['Arlington','Ashland','Bedford','Belmont','Boston','Braintree',
+#               'Brookline','Burlington','Cambridge','Canton','Chelsea','Clinton',
+#               'Dedham','Everett','Framingham','Hingham','Holbrook','Lancaster',
+#               'Lexington','Malden','Medford','Melrose','Milton','Nahant','Natick',
+#               'Needham','Newton','Norwood','Quincy','Randolph','Reading','Revere',
+#               'Somerville','Stoneham','Stoughton','Wakefield','Walpole','Waltham',
+#               'Watertown','Wellesley','Westwood','Weymouth',
+#               'Wilmington','Winchester','Winthrop','Woburn'
+#               ]

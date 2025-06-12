@@ -6,6 +6,7 @@ Created on Fri Dec 15 13:19:14 2023
 """
 
 import streamlit as st
+import pandas as pd
 
 st.title('About this tool...')
 st.header('The short version')
@@ -21,7 +22,7 @@ st.write('This database has been compiled in order to aggregate relevant data so
          and greenhouse gases from across national and state agencies. This creates a single point \
         of reference for data needed to conduct community-wide greenhouse gas emissions analyses \
         and associated analysis such as energy use and production at the municipal level. Where \
-        available, data are collected for the years 2017 through 2022. The database will be updated \
+        available, data are collected for the years 2017 through 2023. The database will be updated \
         as additional years of data become available. \
             \
         Data is collected and cleaned from the original sources as described below and output into \
@@ -42,6 +43,15 @@ st.write('Demographic data including population, number of households, income an
         and variables is given below.')
         
 # add table here
+census_tables = pd.DataFrame(data = {'Population':['B03002'],
+                                     'Households':['B25002'],
+                                     'Median Household Income':['B19013'],
+                                     'Housing Units':['B25024'],
+                                     'Heating Fuels':['B25040'],
+                                     'Transportation to Work':['B08006'],
+                                     'Travel Time to Work':['B08012']
+                                     }, index=['Table'])
+st.write(census_tables, unsafe_allow_html=True)
 
 st.header('Utility Data')
 st.write('Electric and natural gas utility data are collected from the Mass Save program \
@@ -73,6 +83,12 @@ st.write('In addition to the utility data described above, EIA’s RECS data is 
         home type, shown in the table below.')
 
 # add table here
+recs_data = pd.DataFrame(data = {'Average Oil Use (gallons/year)': [786,551,464,303,418],
+                                 'Average Propane Use (gallons/year)': [503,362,153,144,332],
+                                 #'Wood': []
+                                 },
+                         index=['1, detached','1, attached','2-4 units','5+ units','mobile home'])
+st.write(recs_data, unsafe_allow_html=True)
 
 st.write('As in the MAPC Inventory Tool, fuel oil and propane consumption are estimated from the number \
             of households using each heating fuel \
@@ -100,6 +116,11 @@ st.write('As for the residential buildings, the Mass Save and MLP Annual Reports
             In addition, direct emissions from industrial facilities from the U.S. EPA are included to capture \
                 emissions from industrial processes.')
 
+st.header('Solar and Renewables')
+st.write("Data on solar installations is taken from the Massachusetts Clean Energy Center's Production Tracking \
+         System (PTS). Data on other renewable energy installations is from MA DOER's lists of qualified generating \
+            units.")
+
 st.header('Transportation')
 st.subheader('Residential')
 st.write('The number of passenger vehicles and vehicle miles traveled is provided by the Massachusetts \
@@ -117,6 +138,8 @@ st.header('Waste')
 st.write('Tonnage of trash is collected from the Massachusetts DEP. An emissions factor is applied depending \
          on whether trash is primarily sent to a landfill or an incinerator. Food and yard waste collection \
            reported is assumed to be composted.')
+st.write('Wastewater emissions are based on state total wastewater emissions data applied per capita based on \
+         the population in each municipality as well as their type of wastewater management system. ')
 
 st.header('Data Sources')
 st.markdown('''Massachusetts Department of Economic Research. Employment and Wages.  

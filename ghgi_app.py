@@ -6,11 +6,11 @@ MA Greenhouse Gas Inventory Tool
 
 import streamlit as st
 import pandas as pd
-import numpy as np
-import json
+#import numpy as np
+#import json
 import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+#import plotly.graph_objects as go
+#from plotly.subplots import make_subplots
 #import streamlit_analytics2 as streamlit_analytics
 
 start_year = 2017
@@ -349,67 +349,69 @@ with tab5:
     st.write('Data Sources: MA DOT Vehicle Census, MAPC MBTA data, FTA National Transit Database')
 
 with tab6:
-    st.header('Waste Emissions: Under construction')
-    
-    #year6 = st.selectbox('Which year would you like to look at?',
-    #                        range(end_year,start_year-1,-1),
-    #                        index=0,
-    #                        key='year6')
-    
-    incinerator_towns = ['Bedford','Burlington','Chelmsford','Dracut','Essex', # Covanta Haverhill contract communities
-                         'Groton','Harvard','Haverhill','Littleton','Lynnfield',
-                         'Middleton','North Reading','Peabody','Reading','Stoneham',
-                         'Tewksbury','Tyngsboro','Wakefield','Westford','West Newbury',
-                         'Winchester',
-                         # SEMASS collects trash from nearly 40 communities in Southeast MA, Cape Cod, and Boston metro area, but not listed in report
-                         'Quincy','Braintree','Weymouth','Hingham','Cohasset',
-                         'Scituate','Norwell','Hanover','Avon','Stoughton',
-                         'Sharon','Dighton','Berkley','Bridgewater','Kingston',
-                         'Plymouth','Carver','Wareham','Marion','Rochester',
-                         'Acushnet','Fairhaven','Sandwich','Yarmouth','Chatham',
-                         'Eastham','Truro',
-                         #Wheelabrator Millbury
-                         'Auburn','Blackstone','Dedham','Dover','East Brookfield',
-                         'Franklin','Grafton','Holden','Holliston','Hopedale',
-                         'Hopkinton','Maynard','Medfield','Medway','Mendon',
-                         'Milford','Millbury','Millis','Millville','Natick',
-                         'Needham','Newton','Northborough','Norfolk','Mansfield',
-                         'Paxton','Princeton','Rutland','Sherborn','Shrewsbury',
-                         'Southborough','Spencer','Sutton','Upton','Walpole',
-                         'Westborough','Weston','Westwood','Worcester',
-                         # Wheelabrator North Andover
-                         'Acton','Amesbury','Arlington','Belmont','Billerica',
-                         'Boxborough','Carlisle','Hamilton','Ipswich','Lexington',
-                         'Lincoln','Lowell','Manchester','Merrimac','Newburyport',
-                         'North Andover','Pepperell','Salisbury','Waltham','Watertown',
-                         'Wenham','Wilmington','Winchester',
-                         # Wheelabrator Saugus
-                         'Boston','Chelsea','Everett','Lynn','Manchester',
-                         'Newton','Revere','Saugus','Somerville'
-                         ]
-    
-    mwra_towns = ['Arlington','Ashland','Bedford','Belmont','Boston','Braintree',
-                  'Brookline','Burlington','Cambridge','Canton','Chelsea','Clinton',
-                  'Dedham','Everett','Framingham','Hingham','Holbrook','Lancaster',
-                  'Lexington','Malden','Medford','Melrose','Milton','Nahant','Natick',
-                  'Needham','Newton','Norwood','Quincy','Randolph','Reading','Revere',
-                  'Somerville','Stoneham','Stoughton','Wakefield','Walpole','Waltham',
-                  'Watertown','Wellesley','Westwood','Weymouth',
-                  'Wilmington','Winchester','Winthrop','Woburn'
-                  ]
+    st.header('Waste Emissions')
+    from utils.waste_graphs import waste_graph, waste_graph1
     
     st.markdown('What share (%) of trash in '+municipality+' is disposed in a landfill?')
     if dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==2022),'Incinerator'].item()=='Y':
         landfill = 0
+        pct_msw = 0
+        st.markdown(municipality+' sends all trash to an incinerator.')
+    elif municipality == 'Massachusetts':
+        landfill = 10
+        pct_msw = 10
+        st.markdown('Around 10% of trash is disposed in landfills, 90% is incinerated.')
     else:
         landfill = 100
         pct_msw = st.slider('Move the slider to adjust. 0 is all going to an incinerator, 100 is all going to a landfill.',
                              value=landfill,
                              min_value=0,max_value=100,key='landfill')
-    #mwra = st.toggle('Is your municipality part of the MWRA?',
-    #                 value=True,key='mwra')
+    
+    if dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==2022),'AD Community'].item()==1:
+        mwra = 1
+        st.markdown(municipality+' uses a waterwater treatment plant with anaerobic digestion and methane capture.')
+    else: 
+        mwra = 0
+        if municipality != 'Massachusetts':
+            st.markdown(municipality+' uses a municipal wastewater treatment plant and/or septic systems for wastewater.')
+    
+    st.markdown('What share (%) of '+municipality+' has septic systems?')
+    septic = 46
+    pct_septic = st.slider('Move the slider to adjust. 0 is all going to a municipal wastewater treatment plant, 100 is all septic.',
+                             value=septic,
+                             min_value=0,max_value=100,key='septic')
+    
+    # st.metric(label='Landfill slider',value=pct_msw)
+    # l = (dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==2022),'Landfill (MTCO2e)'].item())*(pct_msw/100)
+    # st.metric(label='Landfill',
+    #           value=l)
+    # i = (dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==2022),'Incineration (MTCO2e)'].item())*(100-pct_msw)/100
+    # st.metric(label='Incinerator',
+    #           value=i)
+    # c = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==2022),'Compost (MTCO2e)'].item()
+    # st.metric(label='Compost',
+    #           value=c)
+    # st.metric(label='MWRA Indicator',value=mwra)
+    # ad = (dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==2022),'MWRA AD (MTCO2e)'].item())*mwra
+    # st.metric(label='WWT W/AD',
+    #           value=ad)
+    # st.metric(label='septic slider',value=pct_septic)
+    # wwtp = (dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==2022),'WWTP (MTCO2e)'].item())*(100-pct_septic)/100
+    # st.metric(label='WWTP',
+    #           value=wwtp)
+    # s = (dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==2022),'Septic (MTCO2e)'].item())*(septic/100)
+    # st.metric(label='Septic',
+    #           value=s)
 
-    #year_set6 = waste_graph(municipality,year6,dataset,colors_waste)
+    year_set6 = waste_graph(municipality,pct_msw,mwra,pct_septic,dataset,colors_waste)
+    
+    year6 = st.selectbox('Which year would you like to look at?',
+                            range(end_year,start_year-1,-1),
+                            index=0,
+                            key='year6')
+    
+    year_set6 = waste_graph1(municipality,year6,landfill,mwra,septic,dataset,colors_waste)
+    
     
     st.write('Data Sources: MA DEP')
     
