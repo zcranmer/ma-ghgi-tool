@@ -15,7 +15,8 @@ def solar_graph(m,solar):
     subset = solar[solar['City']==m]
     # new and cumulative graph
     fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'},{'type':'scatter'}]],
-                        subplot_titles=('New solar capacity','Cumulative solar capacity')
+                        subplot_titles=('New solar capacity','Cumulative solar capacity'),
+                        horizontal_spacing=0.1
                         )
     fig.add_trace(
         go.Scatter(x=subset.Year,y=subset['Capacity (kW DC) All'],
@@ -38,17 +39,17 @@ def solar_graph(m,solar):
                    name='Cumulative Residential Capacity'),
                    row=1,col=2)
     
-    fig.update_layout(title=dict(text='Solar adoption in '+m,font=dict(size=28)),
+    fig.update_layout(title=dict(text='Solar adoption in '+m,font=dict(size=24)),
                       yaxis=dict(#range=[0,1.4*(subset['Total (CO2e)'].max())],
-                                 title=dict(text='Capacity (kW DC)',font=dict(size=18),standoff=15),
-                                 tickfont=dict(size=14)),
+                                 title=dict(text='Capacity (kW DC)',font=dict(size=18,color='black'),standoff=15),
+                                 tickfont=dict(size=14,color='black')),
                       yaxis2=dict(#range=[0,1.4*(subset['Total (CO2e)'].max())],
-                                 title=dict(text='Capacity (kW DC)',font=dict(size=18),standoff=10),
-                                 tickfont=dict(size=14))
+                                 title=dict(text='Capacity (kW DC)',font=dict(size=18,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black'))
                       )
-    fig.update_xaxes(title=dict(text='Year',font=dict(size=18)),
+    fig.update_xaxes(title=dict(text='Year',font=dict(size=18,color='black')),
                      tickvals=list(range(2000,2024,5)),
-                     tickfont=dict(size=14))
+                     tickfont=dict(size=14,color='black'))
     fig.update_traces(mode='markers+lines',hovertemplate=None)
     fig.update_layout(hovermode='x',showlegend=True,
                       legend=dict(orientation="h",
@@ -57,7 +58,8 @@ def solar_graph(m,solar):
                                   xanchor="right",
                                   x=1,
                                   font=dict(size=14)),
-                      height = 500, width = 1000
+                      height = 500, width = 1000,
+                      annotations=[dict(font=dict(color='black'))]
                       )
     st.plotly_chart(fig)
     
@@ -123,24 +125,34 @@ def solar_graph(m,solar):
     fig = make_subplots(rows=1,cols=2,specs=[[{'type':'domain'}, {'type':'domain'}]],
                         subplot_titles=('Share of capacity by sector',
                                         'Share of projects by sector'),
-                        horizontal_spacing = 0.05,
+                        horizontal_spacing = 0.2,
                         )
     
     fig.add_trace(
         go.Pie(labels=sa_year_sub1['index'], values=sa_year_sub1['Sectors'].round(0),
                sort=False,rotation=180,
-               textinfo='label+percent',textfont_size=14,showlegend=False),
+               textinfo='label+percent',textfont_size=14,showlegend=False,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','black','white','black','white','black','black','black','white','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=1,col=1)
     
     fig.add_trace(
         go.Pie(labels=sa_year_sub2['index'], values=sa_year_sub2['Sectors'].round(0),
                sort=False,rotation=-75,
-               textinfo='label+percent',textfont_size=14,showlegend=False),
+               textinfo='label+percent',textfont_size=14,showlegend=False,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','black','white','black','white','black','black','black','white','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=1,col=2)
     
-    fig.update_layout(height = 500, width = 1000)
-    fig.layout.annotations[0].update(y=1.1)
-    fig.layout.annotations[1].update(y=1.1)
+    fig.update_layout(height = 500, width = 1000,
+                      annotations=[dict(font=dict(color='black'))]
+                      )
+    fig.layout.annotations[0].update(y=1.2)
+    fig.layout.annotations[1].update(y=1.2)
     
     st.plotly_chart(fig)
     return year_set4

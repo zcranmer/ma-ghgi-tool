@@ -61,13 +61,13 @@ def waste_graph(m,landfill,mwra,septic,dataset,colors_waste):
                    name='Septic',line=dict(color=colors_waste['Septic'])),
                    row=1,col=1)
     
-    fig.update_layout(title=dict(text='Waste Emissions in '+str(m),font=dict(size=28)),
-                      yaxis=dict(title=dict(text='CO2e',font=dict(size=18),standoff=10),
-                                 tickfont=dict(size=14)),
-                      xaxis=dict(title=dict(text='Year',font=dict(size=18)),
+    fig.update_layout(title=dict(text='Waste Emissions in '+str(m),font=dict(size=24)),
+                      yaxis=dict(title=dict(text='CO2e',font=dict(size=18,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black')),
+                      xaxis=dict(title=dict(text='Year',font=dict(size=18,color='black')),
                                  tickvals=subset.Year,
-                                 tickfont=dict(size=14)),
-                      height=600,width=1000)
+                                 tickfont=dict(size=14,color='black')),
+                      height=500,width=800)
     st.plotly_chart(fig)
     
 @st.cache_data
@@ -79,7 +79,8 @@ def waste_graph1(m,y,landfill,mwra,septic,dataset,colors_waste):
                                              ],
                         subplot_titles=('Solid waste over time',
                                         'Share of waste in '+str(y)),
-                        horizontal_spacing = 0.1,
+                        horizontal_spacing = 0.15,
+                        vertical_spacing=0.2
                         )
     
     # line chart
@@ -121,16 +122,25 @@ def waste_graph1(m,y,landfill,mwra,septic,dataset,colors_waste):
     fig.add_trace(
         go.Pie(labels=msw_year_sub['index'], values=msw_year_sub['Waste'].round(0),
                marker_colors=msw_year_sub['index'].map(colors_waste),
-               textinfo='label+percent',textfont_size=14,showlegend=False),
+               rotation=160,
+               textinfo='label+percent',textfont_size=14,showlegend=False,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','white','white','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=1,col=2)
     
-    fig.update_layout(title=dict(text='Solid waste in '+str(m),font=dict(size=28)),
+    fig.update_layout(title=dict(text='Solid waste in '+str(m),font=dict(size=24)),
                       yaxis=dict(title=dict(text='tons',font=dict(size=18),standoff=10),
                                  tickfont=dict(size=14)),
                       xaxis=dict(title=dict(text='Year',font=dict(size=18)),
                                  tickvals=subset.Year,
                                  tickfont=dict(size=14)),
-                      height=600,width=1200)
+                      height=500,width=1200,
+                      margin_t=150,
+                      annotations=[dict(font=dict(color='black'))])
+    fig.layout.annotations[0].update(y=1.05)
+    fig.layout.annotations[1].update(y=1.05)
     #fig.layout.update(showlegend=False)
 
     st.plotly_chart(fig)

@@ -33,19 +33,20 @@ def m_demog_graph(m,dataset,start_year,end_year):
     fig.update_traces(mode='markers+lines',hovertemplate=None)
     fig.update_layout(hovermode='x',showlegend=False,
                       yaxis=dict(range=[0,1.4*(subset['Population'].max())],
-                                 title=dict(text='People',font=dict(size=18)),
-                                 tickfont=dict(size=14)),
+                                 title=dict(text='People',font=dict(size=18,color='black')),
+                                 tickfont=dict(size=14,color='black')),
                       yaxis2=dict(range=[0,1.4*(subset['Total Heating Fuel Households'].max())],
-                                  title=dict(text='Households',font=dict(size=18)),
-                                  tickfont=dict(size=14)),
+                                  title=dict(text='Households',font=dict(size=18,color='black')),
+                                  tickfont=dict(size=14,color='black')),
                       yaxis3=dict(range=[0,1.4*(subset['Median household income'].max())],
-                                  title=dict(text='$',font=dict(size=18)),
-                                  tickfont=dict(size=14)),
-                      height=1200,width=500
+                                  title=dict(text='$',font=dict(size=18,color='black')),
+                                  tickfont=dict(size=14,color='black')),
+                      height=1200,width=500,
+                      annotations=[dict(font=dict(color='black'))]
                       )
-    fig.update_xaxes(title=dict(text='Year',font=dict(size=18)),
+    fig.update_xaxes(title=dict(text='Year',font=dict(size=18,color='black')),
                      tickvals=list(range(start_year,end_year+1)),
-                     tickfont=dict(size=14))
+                     tickfont=dict(size=14,color='black'))
     
     st.plotly_chart(fig)
     return subset

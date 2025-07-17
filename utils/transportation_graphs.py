@@ -20,7 +20,7 @@ def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
                                         'Vehicle miles traveled over time',
                                         'Energy use over time',
                                         'Emissions over time'),
-                        horizontal_spacing = 0.1,
+                        horizontal_spacing = 0.15,
                         vertical_spacing = 0.2
                         )
     
@@ -178,29 +178,30 @@ def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
                    row=2,col=2)
     
     fig.update_layout(hovermode='x',
-                      title=dict(text='Share of vehicles and miles driven in '+m,font=dict(size=28)),
-                      yaxis=dict(title=dict(text='Vehicles',font=dict(size=18),standoff=10),
-                                 tickfont=dict(size=14)),
-                      yaxis2=dict(title=dict(text='Daily VMT',font=dict(size=18),standoff=0),
-                                 tickfont=dict(size=14)),
-                      yaxis3=dict(title=dict(text='MMBTU',font=dict(size=18),standoff=10),
-                                 tickfont=dict(size=14)),
-                      yaxis4=dict(title=dict(text='MTCO2e',font=dict(size=18),standoff=0),
-                                 tickfont=dict(size=14)),
-                      xaxis=dict(title=dict(text='Year',font=dict(size=18)),
+                      title=dict(text='Share of vehicles and miles driven in '+m,font=dict(size=24)),
+                      yaxis=dict(title=dict(text='Vehicles',font=dict(size=18,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black')),
+                      yaxis2=dict(title=dict(text='Daily VMT',font=dict(size=18,color='black'),standoff=0),
+                                 tickfont=dict(size=14,color='black')),
+                      yaxis3=dict(title=dict(text='MMBTU',font=dict(size=18,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black')),
+                      yaxis4=dict(title=dict(text='MTCO2e',font=dict(size=18,color='black'),standoff=0),
+                                 tickfont=dict(size=14,color='black')),
+                      xaxis=dict(title=dict(text='Year',font=dict(size=18,color='black')),
                                  tickvals=subset.Year,
-                                 tickfont=dict(size=14)),
-                      xaxis2=dict(title=dict(text='Year',font=dict(size=18)),
+                                 tickfont=dict(size=14,color='black')),
+                      xaxis2=dict(title=dict(text='Year',font=dict(size=18,color='black')),
                                  tickvals=subset.Year,
-                                 tickfont=dict(size=14)),
-                      xaxis3=dict(title=dict(text='Year',font=dict(size=18)),
+                                 tickfont=dict(size=14,color='black')),
+                      xaxis3=dict(title=dict(text='Year',font=dict(size=18,color='black')),
                                  tickvals=subset.Year,
-                                 tickfont=dict(size=14)),
-                      xaxis4=dict(title=dict(text='Year',font=dict(size=18)),
+                                 tickfont=dict(size=14,color='black')),
+                      xaxis4=dict(title=dict(text='Year',font=dict(size=18,color='black')),
                                  tickvals=subset.Year,
-                                 tickfont=dict(size=14)),
+                                 tickfont=dict(size=14,color='black')),
                       legend_tracegroupgap = 280,
                       height=800,width=1000,
+                      annotations=[dict(font=dict(color='black'))]
                       )
 
     st.plotly_chart(fig)
@@ -278,23 +279,35 @@ def trans_graph(m,y5,dataset):
     fig.add_trace(
         go.Pie(labels=rf_year_sub_s['index'], values=rf_year_sub_s['Energy'].round(0),
                sort=False,rotation=180,
-               textinfo='label+percent',textfont_size=14,showlegend=False),
+               textinfo='label+percent',textfont_size=14,showlegend=False,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','white','black','black','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=1,col=1)
     
     # Emissions pie chart
     fig.add_trace(
         go.Pie(labels=rf_year_sub_f['index'], values=rf_year_sub_f['Emissions'].round(0),
                sort=False,rotation=180,
-               textinfo='label+percent',textfont_size=14,showlegend=False),
+               textinfo='label+percent',textfont_size=14,showlegend=False,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','white','black','black','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=1,col=2)
     
-    fig.update_layout(title=dict(text='Share of emissions and sources in '+m+' in '+str(y5),font=dict(size=28)),
+    fig.update_layout(title=dict(text='Share of emissions and sources in '+m+' in '+str(y5),font=dict(size=24)),
                       yaxis=dict(title=dict(text='MMBTU',font=dict(size=18),standoff=10),
                                  tickfont=dict(size=14)),
                       xaxis=dict(title=dict(text='Year',font=dict(size=18)),
                                  tickvals=subset.Year,
                                  tickfont=dict(size=14)),
-                      height=400,width=1000
+                      height=400,width=1000,
+                      margin_t=125,
+                      annotations=[dict(font=dict(color='black'))]
                       )
+    fig.layout.annotations[0].update(y=1.1)
+    fig.layout.annotations[1].update(y=1.1)
 
     st.plotly_chart(fig)

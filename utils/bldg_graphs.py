@@ -136,20 +136,21 @@ def bldg_graph1(m,dataset,colors_fuel,start_year,end_year):
 
     fig.update_traces(mode='markers+lines',hovertemplate=None)
     fig.update_layout(hovermode='x',
-                      title=dict(text='Building energy and emissions in '+m,font=dict(size=28)),
-                      yaxis=dict(title=dict(text='MMBTU',font=dict(size=18),standoff=10),
-                                 tickfont=dict(size=14)),
-                      yaxis2=dict(title=dict(text='MMBTU',font=dict(size=18),standoff=0),
-                                  tickfont=dict(size=14)),
-                      yaxis3=dict(title=dict(text='MTCO2e',font=dict(size=18),standoff=10),
-                                  tickfont=dict(size=14)),
-                      yaxis4=dict(title=dict(text='MTCO2e',font=dict(size=18),standoff=0),
-                                  tickfont=dict(size=14)),
-                      height=750,width=1000
+                      title=dict(text='Building energy and emissions in '+m,font=dict(size=24)),
+                      yaxis=dict(title=dict(text='MMBTU',font=dict(size=18,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black')),
+                      yaxis2=dict(title=dict(text='MMBTU',font=dict(size=18,color='black'),standoff=0),
+                                  tickfont=dict(size=14,color='black')),
+                      yaxis3=dict(title=dict(text='MTCO2e',font=dict(size=18,color='black'),standoff=10),
+                                  tickfont=dict(size=14,color='black')),
+                      yaxis4=dict(title=dict(text='MTCO2e',font=dict(size=18,color='black'),standoff=0),
+                                  tickfont=dict(size=14,color='black')),
+                      height=750,width=1000,
+                      annotations=[dict(font=dict(color='black'))]
                       )
-    fig.update_xaxes(title=dict(text='Year',font=dict(size=18)),
+    fig.update_xaxes(title=dict(text='Year',font=dict(size=18,color='black')),
                      tickvals=list(range(start_year,end_year+1)),
-                     tickfont=dict(size=14))
+                     tickfont=dict(size=14,color='black'))
     
     st.plotly_chart(fig)
     return subset
@@ -240,19 +241,31 @@ def bldg_graph2(m,y3,dataset,colors_fuel):
     fig.add_trace(
         go.Pie(labels=rf_year_sub['index'], values=rf_year_sub['Emissions'].round(0),
                sort=False,rotation=120,
-               textinfo='label+percent',textfont_size=14),
+               textinfo='label+percent',textfont_size=14,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','white','black','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=1,col=1)
     fig.add_trace(
         go.Pie(labels=cf_year_sub['index'], values=cf_year_sub['Emissions'].round(0),
                sort=False,marker_colors=cf_year_sub['index'].map(colors_fuel),
                rotation=-90,
-               textinfo='label+percent',textfont_size=14),
+               textinfo='label+percent',textfont_size=14,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','white','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=1,col=2)
     fig.add_trace(
         go.Pie(labels=hh_year_sub_f['index'], values=hh_year_sub_f['Fuels'].round(0),
                sort=False,marker_colors=hh_year_sub_f['index'].map(colors_fuel),
                rotation=45,
-               textinfo='label+percent',textfont_size=14),
+               textinfo='label+percent',textfont_size=14,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','white','black','black','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=2,col=1)
     #fig.add_trace(
     #    go.Pie(labels=cc_year_sub_f['index'], values=cc_year_sub_f['Employment'].round(0),
@@ -260,12 +273,13 @@ def bldg_graph2(m,y3,dataset,colors_fuel):
     #    row=2,col=2)
     
     fig.update_layout(title=dict(text='Share of emissions and sources in '+m+' in '+str(y3),
-                                 font=dict(size=28),
+                                 font=dict(size=24),
                                  y = 1,
                                  yanchor='top',
                                  ),
                       height=750,width=1000,
-                      showlegend=False
+                      showlegend=False,
+                      annotations=[dict(font=dict(color='black'))]
                       )
     fig.layout.annotations[0].update(y=1.05)
     fig.layout.annotations[1].update(y=1.05)

@@ -56,13 +56,13 @@ colors_waste = {'Trash':'darkblue',
 
 # function for statewide maps for a single year
 @st.cache_data
-def map_figure(y,d):
+def map_figure(dataset,solar_data,geodata,y,d):
     st.session_state.key = d
     
     dataset_year = dataset[dataset['Year']==y]
     dataset_year['Municipality'] = dataset_year['Municipality'].str.capitalize().str.replace('Attleborough','Attleboro')
     
-    solar_year = solar.loc[solar['Year']==y,:]
+    solar_year = solar_data.loc[solar_data['Year']==y,:]
     solar_year['City'] = solar_year['City'].str.capitalize()
     
     #geo should be a dictionary of geospatial data and df has the non-spatial data
@@ -72,7 +72,7 @@ def map_figure(y,d):
     if d == 'Total Emissions':
         # total emissions
         st.write('Total emissions by municipality')
-        fig = px.choropleth(dataset_year,geojson=geo,locations='Municipality',
+        fig = px.choropleth(dataset_year,geojson=geodata,locations='Municipality',
                             featureidkey='properties.Name',color='Total (MTCO2e)',
                             range_color=[1000,200000],
                             labels={'Total (MTCO2e)':'MTCO2e'})
@@ -80,35 +80,35 @@ def map_figure(y,d):
     elif d == 'Per Capita Emissions':
         # per capita emissions
         st.write('Per person emissions by municipality in '+str(y))
-        fig = px.choropleth(dataset_year,geojson=geo,locations='Municipality',
+        fig = px.choropleth(dataset_year,geojson=geodata,locations='Municipality',
                             featureidkey='properties.Name',color='Per Capita (MTCO2e)',
                             range_color=[0,15],
                             labels={'Per Capita (MTCO2e)':'MTCO2e'})
         
     elif d == 'Building Emissions':
         st.write('Total emissions from buildings by municipality in '+str(y))
-        fig = px.choropleth(dataset_year,geojson=geo,locations='Municipality',
+        fig = px.choropleth(dataset_year,geojson=geodata,locations='Municipality',
                             featureidkey='properties.Name',color='Total Buildings (MTCO2e)',
                             range_color=[0,100000],
                             labels={'Total Buildings (MTCO2e)':'MTCO2e'})
         
     elif d == 'Transportation Emissions':
         st.write('Total emissions from transportation by municipality in '+str(y))
-        fig = px.choropleth(dataset_year,geojson=geo,locations='Municipality',
+        fig = px.choropleth(dataset_year,geojson=geodata,locations='Municipality',
                             featureidkey='properties.Name',color='Total Transportation (MTCO2e)',
                             range_color=[0,100000],
                             labels={'Total Transportation (MTCO2e)':'MTCO2e'})
         
     elif d == 'Solar PV Capacity':
         st.write('Solar photovoltaic capacity in kW DC by municipality in '+str(y))
-        fig = px.choropleth(solar_year,geojson=geo,locations='City',
+        fig = px.choropleth(solar_year,geojson=geodata,locations='City',
                             featureidkey='properties.Name',color='Capacity (kW DC) All Cumulative',
                             range_color=[0,50000],
                             labels={'':'kW DC'})
     
     elif d == 'Percent EVs':
         st.write('Share of vehicles that are EVs and PHEVs by municipality in '+str(y))
-        fig = px.choropleth(dataset_year,geojson=geo,locations='Municipality',
+        fig = px.choropleth(dataset_year,geojson=geodata,locations='Municipality',
                             featureidkey='properties.Name',color='Percent EVs',
                             labels={'Percent EVs':'%'})
     
@@ -134,7 +134,7 @@ else:
 
 #with streamlit_analytics.track():
 st.markdown('**Which city or town would you like to explore?**')
-municipality = st.selectbox('Click in the box and type the name or scroll through the drop down list.',
+municipality = st.selectbox('**Click in the box and type the name or scroll through the drop down list.**',
                              dataset['Municipality'].unique().tolist(),
                              index=0,
                              key='local')
@@ -176,7 +176,7 @@ with tab1:
     st.text(' ')
     st.text(' ')
     st.markdown('**Which year would you like to look at?**')
-    year1 = st.selectbox('Choose a year from the drop down menu',
+    year1 = st.selectbox('**Choose a year from the drop down menu**',
                          range(end_year,2019,-1),
                          index=0,
                          key='year1')
@@ -249,7 +249,7 @@ with tab3:
     st.text(' ')
     st.text(' ')
     st.markdown('**Which year would you like to look at?**')
-    year3 = st.selectbox('Choose a year from the drop down menu',
+    year3 = st.selectbox('**Choose a year from the drop down menu**',
                             range(end_year,start_year-1,-1),
                             index=0,
                             key='year3')
@@ -339,7 +339,7 @@ with tab5:
     st.text('')
     st.text('')
     st.markdown('**Which year would you like to look at?**')
-    year5 = st.selectbox('Choose a year from the drop down menu',
+    year5 = st.selectbox('**Choose a year from the drop down menu**',
                             range(end_year,2019,-1),
                             index=0,
                             key='year5')
@@ -405,7 +405,10 @@ with tab6:
 
     year_set6 = waste_graph(municipality,pct_msw,mwra,pct_septic,dataset,colors_waste)
     
-    year6 = st.selectbox('Which year would you like to look at?',
+    st.text('')
+    st.text('')
+    st.markdown('**Which year would you like to look at?**')
+    year6 = st.selectbox('**Choose a year from the drop down menu**',
                             range(end_year,start_year-1,-1),
                             index=0,
                             key='year6')
@@ -437,7 +440,11 @@ with tab7:
                          index=0,
                          key='year7')
     
-    dataset_year = map_figure(year7,data1)
+    #st.header('TESTING TESTING 1 2 3...')
+    #metric1 = dataset.loc[(dataset['Municipality']=='North attleborough')&(dataset['Year']==2023),'Per Capita (MTCO2e)'].shape[0]
+    #st.metric(label='string',value=metric1)
+    
+    dataset_year = map_figure(dataset,solar,geo,year7,data1)
 
 with tab8:
     st.header('State Targets')

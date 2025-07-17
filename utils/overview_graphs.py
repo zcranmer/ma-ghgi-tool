@@ -8,6 +8,13 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import matplotlib.colors as mcolors
+
+
+# Function to calculate brightness of a color
+def get_brightness(color_name):
+    rgb = mcolors.to_rgb(mcolors.CSS4_COLORS.get(color_name, color_name))
+    return 0.299 * rgb[0]*255 + 0.587 * rgb[1]*255 + 0.114 * rgb[2]*255
 
 # function for annual emissions graph(s)
 @st.cache_data
@@ -17,7 +24,7 @@ def m_graph1(m,dataset,start_year,end_year):
     # Line graph of total emissions and emission per capita
     # make the figure
     fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'},{'type':'scatter'}]],
-                        subplot_titles=('Total MTCO2e','Per Capita MTCO2e')
+                        subplot_titles=('Total MTCO2e','Per Capita MTCO2e'),
                         )
     fig.add_trace(
         go.Scatter(x=subset.Year,y=subset['Total (MTCO2e)'].round(0),name='Total MTCO2e'),
@@ -26,7 +33,7 @@ def m_graph1(m,dataset,start_year,end_year):
         go.Scatter(x=subset.Year,y=subset['Per Capita (MTCO2e)'].round(2),name='Per Capita MTCO2e'),
         row=1,col=2)
     
-    fig.update_layout(title=dict(text='Emissions in '+m,font=dict(size=28)),
+    fig.update_layout(title=dict(text='Emissions in '+m,font=dict(size=24)),
                       yaxis=dict(range=[0,1.4*(subset['Total (MTCO2e)'].max())],
                                  title=dict(text='Total MTCO2e',font=dict(size=18),standoff=10),
                                  tickfont=dict(size=14)),
@@ -39,7 +46,8 @@ def m_graph1(m,dataset,start_year,end_year):
                      tickfont=dict(size=14))
     fig.update_traces(mode='markers+lines',hovertemplate=None)
     fig.update_layout(hovermode='x',showlegend=False,
-                      height=400,width=1000)
+                      height=400,width=1000,
+                      )
     st.plotly_chart(fig)
     
     return subset
@@ -54,8 +62,8 @@ def my_graph1(m,y,dataset,colors_fuel):
                   'Total Propane (MTCO2e)','Total Fuel Oil (MTCO2e)',
                   'Total Gasoline (MTCO2e)',
                   'Total Diesel (MTCO2e)',
-                  'Total Solid Waste Emissions (MTCO2e)',
-                  'Total Wastewater Emissions (MTCO2e)'
+                  #'Total Solid Waste Emissions (MTCO2e)',
+                  #'Total Wastewater Emissions (MTCO2e)'
                   ]
     year_sub1 = year_set[graph_cols1].T
     year_sub1 = year_sub1.rename(columns={year_sub1.columns[0]:'Emissions'},
@@ -123,43 +131,61 @@ def my_graph1(m,y,dataset,colors_fuel):
                                         'Share of emissions by sector in MTCO2e',
                                         'Share of energy by fuel in MMBTU',
                                         'Share of energy by sector in MMBTU'),
-                        vertical_spacing=0.2
+                        vertical_spacing=0.3
                         )
     fig.add_trace(
         go.Pie(labels=year_sub1['index'], values=year_sub1['Emissions'].round(0),
                sort=False,marker_colors=year_sub1['index'].map(colors_fuel),
-               rotation=90,
-               textinfo='label+percent',textfont_size=14),
+               rotation=0,
+               textinfo='label+percent',textfont_size=14,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','white','black','black','white','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=1,col=1)
     fig.add_trace(
         go.Pie(labels=year_sub2['index'], values=year_sub2['Emissions'].round(0),
                sort=False,rotation=-90,
-               textinfo='label+percent',textfont_size=14),
+               textinfo='label+percent',textfont_size=14,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','black','white','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=1,col=2)
     fig.add_trace(
         go.Pie(labels=year_sub3['index'],values=year_sub3['Energy'].round(0),
-               sort=False,rotation=120,
-               textinfo='label+percent',textfont_size=14),
+               sort=False,rotation=90,
+               textinfo='label+percent',textfont_size=14,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','white','black','black','white','black']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=2,col=1)
     fig.add_trace(
         go.Pie(labels=year_sub4['index'],values=year_sub4['Energy'].round(0),
                sort=False,rotation=-70,
-               textinfo='label+percent',textfont_size=14),
+               textinfo='label+percent',textfont_size=14,
+               textfont=dict(color='black'),
+               insidetextfont=dict(color=['white','black','white']),
+               outsidetextfont=dict(color='black'),
+               ),
         row=2,col=2)
     
     fig.update_layout(title=dict(text='Shares of energy and emissions in '+m+' in '+str(y),
-                                 font=dict(size=28),
+                                 font=dict(size=24),
                                  y = 1,
                                  yanchor='top',
                                  ),
                       #title_pad_b = 20,
                       height=750,width=1000,
-                      showlegend=False
+                      showlegend=False,
+                      margin_t=125,
+                      annotations=[dict(font=dict(color='black'))]
                       )
-    fig.layout.annotations[0].update(y=1.05)
-    fig.layout.annotations[1].update(y=1.05)
-    fig.layout.annotations[2].update(y=0.46)
-    fig.layout.annotations[3].update(y=0.46)
+    fig.layout.annotations[0].update(y=1.08)
+    fig.layout.annotations[1].update(y=1.08)
+    fig.layout.annotations[2].update(y=0.47)
+    fig.layout.annotations[3].update(y=0.47)
     
     st.plotly_chart(fig)
     return year_set
