@@ -22,15 +22,15 @@ with col1:
     st.text('')
     st.text('')
     st.text('')
-    st.image('images/bds_GEC_Logo_Horizontal_cmyk.jpg',use_column_width=True)
+    st.image('images/bds_GEC_Logo_Horizontal_cmyk.jpg',use_container_width=True)
 with col2:
     st.text('')
     st.text('')
     st.text('')
     st.text('')
-    st.image('images/MassEnergize-logo.png',use_column_width=True)
+    st.image('images/MassEnergize-logo.png',use_container_width=True)
 with col3:
-    st.image('images/MCAN Logo_Highest resolution.png',use_column_width=True)
+    st.image('images/MCAN Logo_Highest resolution.png',use_container_width=True)
 
 # Load data either from the main app or from the data files
 start_year = 2017
