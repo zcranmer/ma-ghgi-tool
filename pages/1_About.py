@@ -16,6 +16,12 @@ st.write('This tool takes data from U.S. Federal government agencies and MA stat
         and Industrial. The fuels and energy sources estimated include: electricity, \
         natural gas, fuel oil, propane, wood, gasoline, and diesel. The methods used are \
             very similar to those in the MAPC GHGI Spreadsheet tool.')
+
+st.write('This tool is supported by:')
+st.write('Green Energy Consumers Alliance, https://www.greenenergyconsumers.org/')
+st.write('Massachusetts Climate Action Network https://www.massclimateaction.org/')
+st.write('MassEnergize https://www.massenergize.org/')
+st.write('UMass Clean Energy Extension https://www.umass.edu/agriculture-food-environment/clean-energy')
             
 st.header('About this database')
 st.write('This database has been compiled in order to aggregate relevant data sources for energy \
@@ -23,7 +29,8 @@ st.write('This database has been compiled in order to aggregate relevant data so
         of reference for data needed to conduct community-wide greenhouse gas emissions analyses \
         and associated analysis such as energy use and production at the municipal level. Where \
         available, data are collected for the years 2017 through 2023. The database will be updated \
-        as additional years of data become available. \
+        as additional years of data become available. You can add your name to the mailing list for \
+        updates through the form on the feedback page.\
             \
         Data is collected and cleaned from the original sources as described below and output into \
         a single file, municipal_data.xlsx. Due to differences in each dataset and analyses of interest, \
