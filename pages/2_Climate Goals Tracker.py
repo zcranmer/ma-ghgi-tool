@@ -22,15 +22,21 @@ with col1:
     st.text('')
     st.text('')
     st.text('')
-    st.image('images/bds_GEC_Logo_Horizontal_cmyk.jpg',use_container_width=True)
+    st.image('images/bds_GEC_Logo_Horizontal_cmyk.jpg',
+             use_container_width=True
+             )
 with col2:
     st.text('')
     st.text('')
     st.text('')
     st.text('')
-    st.image('images/MassEnergize-logo.png',use_container_width=True)
+    st.image('images/MassEnergize-logo.png',
+             use_container_width=True
+             )
 with col3:
-    st.image('images/MCAN Logo_Highest resolution.png',use_container_width=True)
+    st.image('images/MCAN Logo_Highest resolution.png',
+             use_container_width=True
+             )
 
 # Load data either from the main app or from the data files
 start_year = 2017
@@ -84,7 +90,7 @@ growth_numbers_ma = [int(round(ma_2024_evs*0.9,-2)),
 growth_numbers_ma = [127000,
                      62000,
                      107200,
-                     13400
+                     '13,400'
                      ]
 
 # Local data    
@@ -233,12 +239,11 @@ html_str_hps = f"""
 
 st.markdown(html_str_hps, unsafe_allow_html=True)
 
-
 html_str_pvs = f"""
     <style> p.a {{font-size: 18px; }}</style>
     <p class="a">In {locality} there was {locality_numbers[2]:,} kW of solar installed at the end of 2022. \
         Based on 10% annual growth in solar adoption, that would mean \
-        {growth_numbers[2]:,} new kW installed this year, which is about {growth[3]:,} households \
+        {growth_numbers[2]:,} new kW installed this year, which is about {growth[3]} households \
          and a total of {total_2030_pvs:,} kW in 2030. \
         </p>
     """
