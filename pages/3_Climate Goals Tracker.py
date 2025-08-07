@@ -54,6 +54,11 @@ hp_df.loc[hp_df['Municipality']=='Concord','Installed heat pumps (accounts)'] = 
 
 hp_df['Installed heat pumps (accounts)'] = hp_df['Installed heat pumps (accounts)'].astype('str').replace({'*': 0})
 
+st.markdown("<span style='font-size: 18px;'>Massachusetts's Global Warming Solutions Act **mandates** 50% greenhouse gas \
+            emissions reduction by 2030 (compared to 1990). From that, the Commonwealth derived statewide numerical \
+                **goals** for the adoption of three key decarbonization measures: **electric vehicles (EVs), heat pumps, and solar photovoltaics (PVs)**. \
+                    </span>", unsafe_allow_html=True)
+                    
 st.text('')
 st.text('')
 # Choose municipality
@@ -326,10 +331,7 @@ st.markdown("""
 # Methodology
 st.markdown("<span style='font-size: 16px;'>**Methodology for allocating the state goals:** \
                 </span>", unsafe_allow_html=True)
-st.markdown("<span style='font-size: 14px;'>Massachusetts's Global Warming Solutions Act **mandates** 50% greenhouse gas \
-            emissions reduction by 2030 (compared to 1990). From that, the Commonwealth derived statewide numerical \
-                **goals** for the adoption of three key decarbonization measures: **electric vehicles (EVs), heat pumps, and solar photovoltaics (PVs)**. \
-                    </span>", unsafe_allow_html=True)
+
 st.markdown("<span style='font-size: 14px;'>This Climate Goals Tracker tool assumes linear growth every year from current \
                 adoption levels to the state targets in 2030, and calculates the needed percentage growth for each technology, in each community. \
                 Currently, achieving the 2030 statewide goals means the following growth is required: \
@@ -375,8 +377,9 @@ ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Mamadou Balde
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Khadija Hussaini</th></tr>"
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Janet Bowser</th></tr>"
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Fred Davis</th></tr>"
+ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Halina Brown</th></tr>"
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Hilli Passas</th><th rowspan='1';>Medfield Environment Action</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Zara Dowling</th><th rowspan='2';>UMass Energy Extension</th></tr>"
+ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Zara Dowling</th><th rowspan='2';>UMass Clean Energy Extension</th></tr>"
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Lauren Mattison</th></tr>"
 
 st.write(ty, unsafe_allow_html=True)

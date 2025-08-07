@@ -4,3 +4,4 @@ plotly
 plotly_express
 openpyxl
 matplotlib
+streamlit-analytics

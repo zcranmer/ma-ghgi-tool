@@ -18,6 +18,7 @@ st.write('This tool takes data from U.S. Federal government agencies and MA stat
             very similar to those in the MAPC GHGI Spreadsheet tool.')
 
 st.write('This tool is supported by:')
+st.write('Bentley University: https://www.bentley.edu/')
 st.write('Green Energy Consumers Alliance, https://www.greenenergyconsumers.org/')
 st.write('Massachusetts Climate Action Network https://www.massclimateaction.org/')
 st.write('MassEnergize https://www.massenergize.org/')

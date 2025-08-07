@@ -11,7 +11,7 @@ import json
 # Function for loading data
 @st.cache_data
 def load_data(start_year):
-    df = pd.read_csv('datasets/municipal_emissions.csv')
+    df = pd.read_csv('datasets/municipal_emissions.csv',low_memory=False)
     gdf = json.load(open('datasets/municipalities.json'))
     
     dataset_ma = pd.concat([df.loc[df['Municipality']=='Massachusetts',:],df.loc[df['Municipality']!='Massachusetts',:]],axis=0)
