@@ -15,6 +15,28 @@ st.set_page_config(layout='wide',
                    page_title='Climate Goals Tracker'
                    )
 
+st.markdown('''
+<style>
+.custom-bullets ul {
+    padding-left:40px;
+}
+.custom-bullets li {
+   font-size: 14px;
+   }
+</style>
+''', unsafe_allow_html=True)
+
+st.markdown('''
+<style>
+.custom-bullets1 ul {
+    padding-left:0px;
+}
+.custom-bullets1 li {
+   font-size: 18px;
+   }
+</style>
+''', unsafe_allow_html=True)
+
 col1, col2, col3 = st.columns(3)
 with col1:
     st.text('')
@@ -54,9 +76,12 @@ hp_df.loc[hp_df['Municipality']=='Concord','Installed heat pumps (accounts)'] = 
 
 hp_df['Installed heat pumps (accounts)'] = hp_df['Installed heat pumps (accounts)'].astype('str').replace({'*': 0})
 
+st.markdown("<span style='font-size: 18px;'>Climate Goals Tracker tool give communities information they can use to \
+            set and track their own goals for 2030.</span>", unsafe_allow_html=True)
 st.markdown("<span style='font-size: 18px;'>Massachusetts's Global Warming Solutions Act **mandates** 50% greenhouse gas \
             emissions reduction by 2030 (compared to 1990). From that, the Commonwealth derived statewide numerical \
-                **goals** for the adoption of three key decarbonization measures: **electric vehicles (EVs), heat pumps, and solar photovoltaics (PVs)**. \
+                **goals** for the adoption of three key decarbonization measures in the residential sector: \
+                **900,000 electric vehicles (EVs), 500,000 heat pumps, and 8,360 MW of solar photovoltaics (PVs)**. \
                     </span>", unsafe_allow_html=True)
                     
 st.text('')
@@ -69,6 +94,8 @@ locality = st.selectbox('**Click in the box and type the name or scroll through 
 
 st.title(f'Climate Goals Tracker for {locality}')
 st.subheader('Consumer-Level Decarbonization Adoption')
+
+
     
 # Preparing data for the table
 
@@ -119,7 +146,7 @@ growth_numbers = [int(round(locality_numbers[0]*0.9,0)),
                   ]
 
 locality_hh = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==2023),'Households'].item()
-locality_vehicles = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==2025),'Count Total 01'].item()
+locality_vehicles = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==2025),'Count Res Total 01'].item()
 locality_respv_avg = round(solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Capacity (kW DC) Residential Cumulative'].item()/solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2023),'Project Count Residential Cumulative'].item(),2)
 
 growth = [f'{growth_numbers[0]:,}', # EV count
@@ -189,6 +216,61 @@ df['MA yearly growth to meet goal'] = df['MA yearly growth to meet goal'].apply(
 df[locality] = df[locality].apply(lambda x: f'{x:,}' if isinstance(x, int) else x)
 df[locality+' yearly growth to meet goal'] = df[locality+' yearly growth to meet goal'].apply(lambda x: f'{x:,}' if isinstance(x, int) else x)
 
+# Add text explanation of values in the table for locality
+# html_str_evs = f"""
+#     <style> p.a {{font-size: 18px; }}</style>
+#     <p class="a">In {locality} at the end of 2024, there were {locality_numbers[0]:,} electric vehicles (EVs). \
+#         Based on the statewide need for 90% annual growth in EV adoption, that would mean \
+#         {growth_numbers[0]:,} new EVs this year and a total of {total_2030_evs:,} \
+#         in 2030 (about {total_2030_ev_pct}% of all vehicles). \
+#         </p>
+#     """
+
+# st.markdown(html_str_evs, unsafe_allow_html=True)
+
+# html_str_hps = f"""
+#     <style> p.a {{font-size: 18px; }}</style>
+#     <p class="a">In {locality} at the end of 2023, there were {local_hp_num} heat pumps installed. \
+#         {hp_masssave_statement}\
+#         Based on 50% annual growth in heat pump adoption, that would mean \
+#         {growth_numbers[1]:,} new installations this year and a total of {total_2030_hps:,} in 2030 \
+#         (about {total_2030_hp_pct}% of all households). \
+#         </p>
+#     """
+
+# st.markdown(html_str_hps, unsafe_allow_html=True)
+
+# html_str_pvs = f"""
+#     <style> p.a {{font-size: 18px; }}</style>
+#     <p class="a">In {locality} there was {locality_numbers[2]:,} kW of solar installed at the end of 2022. \
+#         Based on 10% annual growth in solar adoption, that would mean \
+#         {growth_numbers[2]:,} new kW installed this year, which is about {growth[3]} households \
+#          and a total of {total_2030_pvs:,} kW in 2030. \
+#         </p>
+#     """
+
+# st.markdown(html_str_pvs, unsafe_allow_html=True)
+
+st.markdown("""
+            <div class="custom-bullets1">
+            <ul>
+                <li>""" + f"In {locality} at the end of 2024, there were {locality_numbers[0]:,} electric vehicles (EVs). \
+                    Based on the statewide need for 90% annual growth in EV adoption, that would mean \
+                    {growth_numbers[0]:,} new EVs this year and a total of {total_2030_evs:,} \
+                    in 2030 (about {total_2030_ev_pct}% of all vehicles)." + """</li>
+                <li>""" + f"In {locality} at the end of 2023, there were {local_hp_num} heat pumps installed. \
+                    {hp_masssave_statement}\
+                    Based on 50% annual growth in heat pump adoption, that would mean \
+                    {growth_numbers[1]:,} new installations this year and a total of {total_2030_hps:,} in 2030 \
+                    (about {total_2030_hp_pct}% of all households)." + """</li>
+                <li>""" + f"In {locality} there was {locality_numbers[2]:,} kW of solar installed at the end of 2022. \
+                    Based on 10% annual growth in solar adoption, that would mean \
+                    {growth_numbers[2]:,} new kW installed this year, which is about {growth[3]} households \
+                     and a total of {total_2030_pvs:,} kW in 2030." + """</li>
+            </ul>
+            </div>
+            """, unsafe_allow_html=True)
+            
 
 # Display table
 def merge_table_headings(df):
@@ -219,41 +301,6 @@ else:
     df = df[columns]
 st.write(merge_table_headings(df), unsafe_allow_html=True)
 
-    
-# Add text explanation of values in the table for locality
-html_str_evs = f"""
-    <style> p.a {{font-size: 18px; }}</style>
-    <p class="a">In {locality} at the end of 2024, there were {locality_numbers[0]:,} electric vehicles (EVs). \
-        Based on the statewide need for 90% annual growth in EV adoption, that would mean \
-        {growth_numbers[0]:,} new EVs this year and a total of {total_2030_evs:,} \
-        in 2030 (about {total_2030_ev_pct}% of all vehicles). \
-        </p>
-    """
-
-st.markdown(html_str_evs, unsafe_allow_html=True)
-
-html_str_hps = f"""
-    <style> p.a {{font-size: 18px; }}</style>
-    <p class="a">In {locality} at the end of 2023, there were {local_hp_num} heat pumps installed. \
-        {hp_masssave_statement}\
-        Based on 50% annual growth in heat pump adoption, that would mean \
-        {growth_numbers[1]:,} new installations this year and a total of {total_2030_hps:,} in 2030 \
-        (about {total_2030_hp_pct}% of all households). \
-        </p>
-    """
-
-st.markdown(html_str_hps, unsafe_allow_html=True)
-
-html_str_pvs = f"""
-    <style> p.a {{font-size: 18px; }}</style>
-    <p class="a">In {locality} there was {locality_numbers[2]:,} kW of solar installed at the end of 2022. \
-        Based on 10% annual growth in solar adoption, that would mean \
-        {growth_numbers[2]:,} new kW installed this year, which is about {growth[3]} households \
-         and a total of {total_2030_pvs:,} kW in 2030. \
-        </p>
-    """
-
-st.markdown(html_str_pvs, unsafe_allow_html=True)
 
 #html = df.to_html(index=False)
 #html = html.replace('<th>', '<th style="font-size:20px;">')
@@ -264,25 +311,6 @@ st.markdown(html_str_pvs, unsafe_allow_html=True)
 st.write(' ')
 st.write(' ')
 st.write(' ')
-
-# st.markdown('''
-# <style>
-# [data-testid="stMarkdownContainer"] ul{
-#     padding-left:40px;
-# }
-# </style>
-# ''', unsafe_allow_html=True)
-
-st.markdown('''
-<style>
-.custom-bullets ul {
-    padding-left:40px;
-}
-.custom-bullets li {
-   font-size: 14px;
-   }
-</style>
-''', unsafe_allow_html=True)
 
 # Definitions
 st.markdown("<span style='font-size: 16px;'>**Definitions:** \
@@ -309,8 +337,8 @@ st.markdown("""
             <ul>
                 <li>Electric Vehicles: Passenger BEVs and PHEVs from the MA Vehicle Census https://geodot-massdot.hub.arcgis.com/pages/vehicle-census.</li>
                 <li>Heat Pumps: Mass Save program https://masssavedata.com/public/home. (Exception: values below 100 are not provided by Mass Save \
-            due to confidentiality concerns, therefore data may be incomplete particularly for smaller communities.) \
-            Data is unavailable for most MLP communities.")</li>
+            due to confidentiality concerns, therefore data may be incomplete particularly for smaller communities. \
+            Data is unavailable for most MLP communities.)</li>
                 <li>Solar: Residential solar data comes from the MassCEC Production Tracking System (PTS). The tracker uses data from the \
             year 2022 for solar data because the PTS site notes that data from 2022-2024 may be incomplete, \
             visit https://www.masscec.com/production-tracking-system-pts for more information.</li>
@@ -323,8 +351,7 @@ st.markdown("""
             <div class="custom-bullets">
             <ul>
                 <li>Massachusetts Clean Energy and Climate Metrics: \
-                https://www.mass.gov/info-details/massachusetts-clean-energy-and-climate-metrics. Residential solar data comes from the MassCEC \
-                    Production Tracking System (PTS).</li>
+                https://www.mass.gov/info-details/massachusetts-clean-energy-and-climate-metrics. </li>
             </ul>
                    """, unsafe_allow_html=True)
     
@@ -332,30 +359,40 @@ st.markdown("""
 st.markdown("<span style='font-size: 16px;'>**Methodology for allocating the state goals:** \
                 </span>", unsafe_allow_html=True)
 
-st.markdown("<span style='font-size: 14px;'>This Climate Goals Tracker tool assumes linear growth every year from current \
-                adoption levels to the state targets in 2030, and calculates the needed percentage growth for each technology, in each community. \
+st.markdown("<span style='font-size: 14px;'>For simplicity, the Climate Goals Tracker tool assumes that the total number of heat pumps, \
+            solar installations and electric vehicles increases in a straight line between now and 2030. \
                 Currently, achieving the 2030 statewide goals means the following growth is required: \
                 </span>", unsafe_allow_html=True)
                 
 st.markdown("""
             <div class="custom-bullets">
             <ul>
-                <li><strong>EVs</strong>: 2030 goal is 900,000 passenger vehicles or about 18% of all the anticipated 4.9 million passenger vehicles. \
-            As of the end of 2024, there were 139,969 EVs in MA. Meeting the 2030 goal will require adding 127,000 more EVs \
-            this year, which translates to about 90% of the EVs on the road currently.</li>
-                <li><strong>Heat pumps</strong>: 2030 goal is 500,000 heat pump installations or about 16% of all 2.8 million households in MA. \
-            As of the end of 2024, there were 125,678 heat pumps across the state. Roughly, about 62,000 more heat pump installations are \
-            needed this year, which is approximately 50% of the current number of installed heat pumps.</li>
-                <li><strong>Solar PVs</strong>: 2030 goal is 8,360 MW total. In 2022, residential solar installed capacity was roughly 25% of all solar\
-            capacity in MA. Assuming residential solar continues to provide 25% of future solar capacity, the 2030 residential solar \
-            goals would be approximately 2,090 MW residential solar. To achieve this goal, an additional 10% of solar capacity would \
-            need to need to come on line this year. This translates into approximately \
-            13,400 new projects assuming the current residential average of 8 kW.</li>
+                <li><strong>EVs</strong>: In Massachusetts at the end of 2024, there were 139,969 EVs. \
+                    In order to meet the state goal, Massachusetts needs 900,000 EVs by 2030 (that represents \
+                    about 18% of the 4.9 million passenger vehicles registered in Massachusetts). \
+                    Assuming straight-line growth, 127,000 EVs need to be added each year from now to 2030. \
+                    127,000 is about **90%** of the 139,969 EVs currently registered in the state. We therefore \
+                    assume that every community should also add a number of EVs equal to 90% of the EVs it had \
+                    at the end of 2024. </li>
+                <li><strong>Heat pumps</strong>: The 2030 goal is 500,000 heat pump installations or about 16% \
+                    of all 2.8 million households need to adopt heat pumps by 2030. At the end of 2024, \
+                    there were 125,678 heat pumps across the state. Meeting the 2030 goal will require adding \
+                    62,000 more heat pump installations this year and each year after that. 62,000 is \
+                    50% of the 125,678 heat pumps that are currently installed in the state. We therefore assume \
+                    that every community should also annually add the number of heat pump installations equal to \
+                    50% of heat pumps it had at the end of 2024. </li>
+                <li><strong>Solar PVs</strong>: The 2030 goal is 8,360 megawatts (MW) of total solar generation \
+                    in Massachusetts. Based on recent years of solar data, residential solar has made up about 25% \
+                    of total solar installed in Massachusetts. That amounts to 2,090 MW in 2030. At the end of 2022 \
+                    (the latest year of complete data available), residential solar installed capacity was 1,049 MW. \
+                    Meeting the 2030 goals will require adding 107 MW of solar in 2025 and each year after that. \
+                    That translates to approximately 13,400 new projects each year, assuming the current residential \
+                    average project size of 8 kilowatts (kW). Putting is in perspective, each year Massachusetts \
+                    residents need to adopt an additional 10% more solar than are currently operating. </li>
             </ul>
             """, unsafe_allow_html=True)
 
-st.markdown("<span style='font-size: 14px;'> In the town-specific table above, these straight-line growth percentages -- 90%, 50%, 10%  -- \
-            have been applied to each community's current data. This page will be updated as new data becomes available. \
+st.markdown("<span style='font-size: 14px;'>This page will be updated as new data becomes available. \
                     </span>", unsafe_allow_html=True)
             
 st.markdown("<span style='font-size: 14px;'>**Climate Goals Tracker tool** is a collaboration of three leading \
@@ -371,7 +408,7 @@ ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Steve Breit</
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Megan Sullivan</th></tr>"
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Ellen Tohn</th></tr>"
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Bradley Hubbard-Nelson</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Phil Thayer</th><th rowspan='6';>Massachusetts Climate Action Network</th></tr>"
+ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Phil Thayer</th><th rowspan='7';>Massachusetts Climate Action Network</th></tr>"
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Mary Dewart</th></tr>"
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Mamadou Balde</th></tr>"
 ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Khadija Hussaini</th></tr>"
