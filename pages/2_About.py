@@ -17,12 +17,12 @@ st.write('This tool takes data from U.S. Federal government agencies and MA stat
         natural gas, fuel oil, propane, wood, gasoline, and diesel. The methods used are \
             very similar to those in the MAPC GHGI Spreadsheet tool.')
 
-st.write('This tool is supported by:')
-st.write('Bentley University: https://www.bentley.edu/')
-st.write('Green Energy Consumers Alliance, https://www.greenenergyconsumers.org/')
-st.write('Massachusetts Climate Action Network https://www.massclimateaction.org/')
-st.write('MassEnergize https://www.massenergize.org/')
-st.write('UMass Clean Energy Extension https://www.umass.edu/agriculture-food-environment/clean-energy')
+# st.write('This tool is supported by:')
+# st.write('Bentley University: https://www.bentley.edu/')
+# st.write('Green Energy Consumers Alliance, https://www.greenenergyconsumers.org/')
+# st.write('Massachusetts Climate Action Network https://www.massclimateaction.org/')
+# st.write('MassEnergize https://www.massenergize.org/')
+# st.write('UMass Clean Energy Extension https://www.umass.edu/agriculture-food-environment/clean-energy')
             
 st.header('About this database')
 st.write('This database has been compiled in order to aggregate relevant data sources for energy \
@@ -91,11 +91,13 @@ st.write('In addition to the utility data described above, EIA’s RECS data is 
         home type, shown in the table below.')
 
 # add table here
-recs_data = pd.DataFrame(data = {'Average Oil Use (gallons/year)': [786,551,464,303,418],
+recs_data = pd.DataFrame(data = {'Housing Type': ['1, detached','1, attached','2-4 units','5+ units','mobile home'],
+                                 'Average Oil Use (gallons/year)': [786,551,464,303,418],
                                  'Average Propane Use (gallons/year)': [503,362,153,144,332],
                                  #'Wood': []
-                                 },
-                         index=['1, detached','1, attached','2-4 units','5+ units','mobile home'])
+                                 }
+                         )
+recs_data = recs_data.set_index('Housing Type')
 st.write(recs_data, unsafe_allow_html=True)
 
 st.write('As in the MAPC Inventory Tool, fuel oil and propane consumption are estimated from the number \
