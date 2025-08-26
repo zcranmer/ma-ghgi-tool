@@ -22,7 +22,7 @@ st.markdown('''
     padding-left:40px;
 }
 .custom-bullets li {
-   font-size: 14px;
+   font-size: 14px; 
    }
 </style>
 ''', unsafe_allow_html=True)
@@ -77,15 +77,18 @@ hp_df.loc[hp_df['Municipality']=='Concord','Installed heat pumps (accounts)'] = 
 
 hp_df['Installed heat pumps (accounts)'] = hp_df['Installed heat pumps (accounts)'].astype('str').replace({'*': 0})
 
-st.markdown("<span style='font-size: 18px;'>Climate Goals Tracker tool gives communities information they can use to \
-            set and track their own goals for 2030.</span>", unsafe_allow_html=True)
+st.title(f'Climate Goals Tracker')
+st.markdown("<span style='font-size: 18px;'>Climate Goals Tracker provides information to \
+            set climate goals for municipalities and track progress.</span>", unsafe_allow_html=True)
 st.markdown("<span style='font-size: 18px;'>Massachusetts's Global Warming Solutions Act **mandates** 50% greenhouse gas \
             emissions reduction by 2030 (compared to 1990). From that, the Commonwealth derived statewide numerical \
                 **goals** for the adoption of three key decarbonization measures in the residential sector: \
                 **900,000 electric vehicles (EVs), 500,000 heat pumps, and 8,360 MW of solar photovoltaics (PVs)**. \
                     </span>", unsafe_allow_html=True)
+st.markdown("<span style='font-size: 18px;'>Climate Goals Tracker translates these statewide goals to individual \
+            municipalities. Click in the box below and enter the name of your municipality.\
+                    </span>", unsafe_allow_html=True)
                     
-st.text('')
 st.text('')
 streamlit_analytics.start_tracking()
 # Choose municipality
@@ -95,11 +98,8 @@ locality = st.selectbox('**Click in the box and type the name or scroll through 
                                  key='locality')
 streamlit_analytics.stop_tracking()
 
-st.title(f'Climate Goals Tracker for {locality}')
-st.subheader('Consumer-Level Decarbonization Adoption')
+st.subheader(f'Consumer-Level Decarbonization Adoption in {locality}: progress needed')
 
-
-    
 # Preparing data for the table
 
 # State values
@@ -334,7 +334,7 @@ st.markdown("""
 
 
 # Data sources
-st.markdown("<span style='font-size: 16px;'>**Data sources for community-level adoption numbers:** \
+st.markdown("<span style='font-size: 16px;'>**Data sources for community-level targets and progress:** \
                 </span>", unsafe_allow_html=True)
 st.markdown("""
             <div class="custom-bullets">
@@ -349,7 +349,7 @@ st.markdown("""
             </ul>
             """, unsafe_allow_html=True)
 
-st.markdown("<span style='font-size: 16px;'>**Data sources for state-level adoption numbers and goals:** \
+st.markdown("<span style='font-size: 16px;'>**Data sources for state-level targets and progress:** \
                 </span>", unsafe_allow_html=True)
 st.markdown("""
             <div class="custom-bullets">
@@ -360,7 +360,7 @@ st.markdown("""
                    """, unsafe_allow_html=True)
     
 # Methodology
-st.markdown("<span style='font-size: 16px;'>**Methodology for allocating the state goals:** \
+st.markdown("<span style='font-size: 16px;'>**Methodology for deriving annual state-level and municipal-level goals:** \
                 </span>", unsafe_allow_html=True)
 
 st.markdown("<span style='font-size: 14px;'>For simplicity, the Climate Goals Tracker tool assumes that the total number of heat pumps, \
@@ -371,63 +371,81 @@ st.markdown("<span style='font-size: 14px;'>For simplicity, the Climate Goals Tr
 st.markdown("""
             <div class="custom-bullets">
             <ul>
-                <li><strong>EVs</strong>: In Massachusetts at the end of 2024, there were 139,969 EVs. \
+                <li><p><strong>EVs</strong>: In Massachusetts at the end of 2024, there were 139,969 EVs. \
                     In order to meet the state goal, Massachusetts needs 900,000 EVs by 2030 (that represents \
                     about 18% of the 4.9 million passenger vehicles registered in Massachusetts). \
                     Assuming straight-line growth, 127,000 EVs need to be added annually from now to 2030. \
                     127,000 is about <strong>90%</strong> of the 139,969 EVs currently registered in the state. \
                     We therefore assume that every community should also annually add a number of EVs equal to \
-                    90% of the EVs it had at the end of 2024. For example, a community with 100 EVs at the end of \
+                    90% of the EVs it had at the end of 2024. </p>
+                    <p>For example, a community with 100 EVs at the end of \
                     2024 would need to add an additional 90 EVs this year and every year thereafter \
-                    for a total of 640 in 2030.</li>
-                <li><strong>Heat pumps</strong>: The 2030 goal is 500,000 heat pump installations or about 16% \
+                    for a total of 640 in 2030.</p></li>
+                <li><p><strong>Heat pumps</strong>: The 2030 goal is 500,000 heat pump installations or about 16% \
                     of all 2.8 million households need to adopt heat pumps by 2030. At the end of 2024, \
                     there were 125,678 heat pumps across the state. Meeting the 2030 goal will require adding \
                     62,000 more heat pump installations this year and each year after that. 62,000 is \
                     <strong>50%</strong> of the 125,678 heat pumps that are currently installed in the state. \
                     We therefore assume that every community should also annually add the number of heat pump \
-                    installations equal to 50% of heat pumps it had at the end of 2024. For example, a community \
-                    with 100 heat pumps installed by the end of 2023 would need to add 50 additional heat pumps \
-                    this year and every year thereafter for a total of 400 in 2030.</li>
-                <li><strong>Solar PVs</strong>: The 2030 goal is 8,360 megawatts (MW) of total solar generation \
+                    installations equal to 50% of heat pumps it had at the end of 2024. </p>
+                    <p>For example, a community with 100 heat pumps installed by the end of 2023 would need to add 50 additional heat pumps \
+                    this year and every year thereafter for a total of 400 in 2030.</p></li>
+                <li><p><strong>Solar PVs</strong>: The 2030 goal is 8,360 megawatts (MW) of total solar generation \
                     in Massachusetts. Based on recent years of solar data, residential solar has made up about 25% \
                     of total solar installed in Massachusetts. That amounts to 2,090 MW of residential solar in 2030. \
                     At the end of 2022 (the latest year of complete data available), residential solar installed \
                     capacity was 1,049 MW. Meeting the 2030 goals will require adding 107 MW of solar in 2025 and \
                     each year after that. That translates to approximately 13,400 new projects each year, assuming \
-                    the current residential average project size of 8 kilowatts (kW). Putting it in perspective, \
-                    each year Massachusetts residents need to adopt an additional 10% more solar than are currently \
-                    operating. For example, a community with 100 kW of solar installed across 10 households would \
-                    need to add about 10 kW of solar capacity, or the equivalent of on new household installation, \
-                    this year and every year thereafter for a total of 160 kW across 16 households in 2030.</li>
+                    that the average size of current residential projects of 8 kilowatts (kW). Putting it in perspective, \
+                    each year Massachusetts residents need to adopt an additional 10% more solar than there are currently \
+                    operating.</p>
+                    <p>For example, a community with 100 kW of solar installed across 10 households would \
+                    need to add about 10 kW of solar capacity, or the equivalent of one new household installation, \
+                    this year and every year thereafter for a total of 160 kW across 16 households in 2030.</p></li>
             </ul>
             """, unsafe_allow_html=True)
 
 st.markdown("<span style='font-size: 14px;'>This page will be updated as new data becomes available. \
                     </span>", unsafe_allow_html=True)
-            
-st.markdown("<span style='font-size: 14px;'>**Climate Goals Tracker tool** is a collaboration of three leading \
+
+st.divider()
+
+st.markdown("<span style='font-size: 14px;'>**Climate Goals Tracker tool** is a collaborative project of three leading \
             climate organizations in Massachusetts. A group of volunteers developed this work in the first half of \
                 2025. Thanks particularly to the following colleagues: </span>", unsafe_allow_html=True)
-ty = "<table style='border-collapse: collapse;'>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Zana Cranmer</th><th colspan='1';>Bentley University</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Lillian Zhu</th><th rowspan='3';>Green Energy Consumers Alliance</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Larry Chretien</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Anna Vanderspek</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Aimee Powelka</th><th rowspan='1';>Mass, EEA</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Steve Breit</th><th rowspan='4';>MassEnergize</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Megan Sullivan</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Ellen Tohn</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Bradley Hubbard-Nelson</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Phil Thayer</th><th rowspan='7';>Massachusetts Climate Action Network</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Mary Dewart</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Mamadou Balde</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Khadija Hussaini</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Janet Bowser</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Fred Davis</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Halina Brown</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Hilli Passas</th><th rowspan='1';>Medfield Environment Action</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Zara Dowling</th><th rowspan='2';>UMass Clean Energy Extension</th></tr>"
-ty += "<tr style='font-size: 14px;' align='center'><th rowspan='1'>Lauren Mattison</th></tr>"
+ty = """
+<table style='border-collapse: collapse; font-size: 14px; line-height: 1.2;'>
+    <tr align='left' valign='top'>
+        <td style='border: none; border-left: 1px solid #E6E6E6; vertical-align: top;'><strong>Zana Cranmer</strong></td>
+        <td style='border: none; border-right: 1px solid #E6E6E6; vertical-align: top;'>Bentley University</td>
+    </tr>
+    <tr align='left' valign='top'>
+        <td style='border: none; border-left: 1px solid #E6E6E6; vertical-align: top;'><strong>Larry Chretien<br>Anna Vanderspek</strong><br>Lillian Zhu</td>
+        <td style='border: none; border-right: 1px solid #E6E6E6; vertical-align: top;'>Green Energy Consumers Alliance</td>
+    </tr>
+    <tr align='left' valign='top'>
+        <td style='border: none; border-left: 1px solid #E6E6E6; vertical-align: top;'><strong>Ellen Tohn</strong><br>Steve Breit<br>Bradley Hubbard-Nelson<br>Megan Sullivan</td>
+        <td style='border: none; border-right: 1px solid #E6E6E6; vertical-align: top;'>MassEnergize</td>
+    </tr>
+    <tr align='left' valign='top'>
+        <td style='border: none; border-left: 1px solid #E6E6E6; vertical-align: top;'><strong>Fred Davis<br>Halina Brown</strong><br>Mamadou Balde<br>Janet Bowser<br>Mary Dewart<br>Khadija Hussaini<br>Phil Thayer</td>
+        <td style='border: none; border-right: 1px solid #E6E6E6; vertical-align: top;'>Massachusetts Climate Action Network</td>
+    </tr>
+    <tr align='left' valign='top'>
+        <td style='border: none; border-left: 1px solid #E6E6E6; vertical-align: top;'>Aimee Powelka</td>
+        <td style='border: none; border-right: 1px solid #E6E6E6; vertical-align: top;'>Mass, EEA</td>
+    </tr>
+    <tr align='left' valign='top'>
+        <td style='border: none; border-left: 1px solid #E6E6E6; vertical-align: top;'>Hilli Passas</td>
+        <td style='border: none; border-right: 1px solid #E6E6E6; vertical-align: top;'>Medfield Environment Action</td>
+    </tr>
+    <tr align='left' valign='top'>
+        <td style='border: none; border-left: 1px solid #E6E6E6; vertical-align: top;'>Zara Dowling<br>Lauren Mattison</td>
+        <td style='border: none; border-right: 1px solid #E6E6E6; vertical-align: top;'>UMass Clean Energy Extension</td>
+    </tr>
+    <tr>
+    </tr>
+</table>
+"""
 
 st.write(ty, unsafe_allow_html=True)
