@@ -318,7 +318,6 @@ with tab5:
     
     stations_subset = stations.loc[(stations['City']==municipality),:]
     charge_stations = stations_subset.loc[:,'Total Level All Station Count'].max()
-    st.write(charge_stations)
     
     st.markdown('Electric vehicle metrics for January 2025.')
     col1,col2,col3,col4 = st.columns(4)

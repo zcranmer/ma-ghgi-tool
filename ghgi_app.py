@@ -13,7 +13,7 @@ import plotly.express as px
 #from plotly.subplots import make_subplots
 import streamlit_analytics2 as streamlit_analytics
 
-pg = st.navigation([st.Page('pages/GHGI_Tool.py'),
+pg = st.navigation([st.Page('pages/GHG_Inventory_Tool.py'),
                     st.Page('pages/2_About.py'),
                     st.Page('pages/3_Climate Goals Tracker.py'),
                     st.Page('pages/4_Feedback.py')

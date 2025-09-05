@@ -17,12 +17,15 @@ st.write('This tool takes data from U.S. Federal government agencies and MA stat
         natural gas, fuel oil, propane, wood, gasoline, and diesel. The methods used are \
             very similar to those in the MAPC GHGI Spreadsheet tool.')
 
-# st.write('This tool is supported by:')
-# st.write('Bentley University: https://www.bentley.edu/')
-# st.write('Green Energy Consumers Alliance, https://www.greenenergyconsumers.org/')
-# st.write('Massachusetts Climate Action Network https://www.massclimateaction.org/')
-# st.write('MassEnergize https://www.massenergize.org/')
-# st.write('UMass Clean Energy Extension https://www.umass.edu/agriculture-food-environment/clean-energy')
+#st.header('The Team')
+#st.write('The development of this site is led by Dr. Zana Cranmer (acranmer@bentley.edu) of Bentley University in collaboration \
+#         with the UMass Clean Energy Extension, Massachusetts Climate Action Network, Green Energy Consumers \
+#        Alliance, and MassEnergize.')
+#st.write('Bentley University: https://www.bentley.edu/')
+#st.write('Green Energy Consumers Alliance, https://www.greenenergyconsumers.org/')
+#st.write('Massachusetts Climate Action Network https://www.massclimateaction.org/')
+#st.write('MassEnergize https://www.massenergize.org/')
+#st.write('UMass Clean Energy Extension https://www.umass.edu/agriculture-food-environment/clean-energy')
             
 st.header('About this database')
 st.write('This database has been compiled in order to aggregate relevant data sources for energy \

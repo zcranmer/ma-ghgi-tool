@@ -104,7 +104,7 @@ st.subheader(f'Consumer-Level Decarbonization Adoption in {locality}: progress n
 
 # State values
 # Values from CECP page    
-ma_2024_evs = 139969 # EVs and PHEVs
+ma_2024_evs = 139085 #139969 # EVs and PHEVs
 ma_2024_hps = 125678 # HPs
 ma_2022_pvs = 4754000 # PVs All
 ma_2022_pvs_res = 1048691 # PVs Residential only
