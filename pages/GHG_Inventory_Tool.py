@@ -136,7 +136,7 @@ else:
 
 streamlit_analytics.start_tracking()
 st.markdown('**Which city or town would you like to explore?**')
-municipality = st.selectbox('**Click in the box and type the name or scroll through the drop down list.**',
+municipality = st.selectbox('**To make a selection, click in the box and type the name or scroll through the drop down list.**',
                              dataset['Municipality'].unique().tolist(),
                              index=0,
                              key='local')
