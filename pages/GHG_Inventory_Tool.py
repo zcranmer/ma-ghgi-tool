@@ -134,7 +134,7 @@ else:
     stations = st.session_state.df_stations
     hps = st.session_state.df_hp
 
-streamlit_analytics.start_tracking()
+#streamlit_analytics.start_tracking()
 st.markdown('**Which city or town would you like to explore?**')
 municipality = st.selectbox('**To make a selection, click in the box and type the name or scroll through the drop down list.**',
                              dataset['Municipality'].unique().tolist(),
@@ -450,7 +450,7 @@ with tab7:
     
     dataset_year = map_figure(dataset,solar,geo,year7,data1)
 
-streamlit_analytics.stop_tracking()
+#streamlit_analytics.stop_tracking()
 
 with tab8:
     st.header('State Targets')
