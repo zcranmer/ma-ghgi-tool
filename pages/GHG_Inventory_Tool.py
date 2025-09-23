@@ -134,11 +134,19 @@ else:
     stations = st.session_state.df_stations
     hps = st.session_state.df_hp
 
+
+municipalitiesList = dataset['Municipality'].unique().tolist()
+municipalityIndex = 0
+selectedMunicipality = st.query_params['municipality']
+if selectedMunicipality in municipalitiesList :
+    municipalityIndex = municipalitiesList.index(selectedMunicipality)
+
+
 #streamlit_analytics.start_tracking()
 st.markdown('**Which city or town would you like to explore?**')
 municipality = st.selectbox('**To make a selection, click in the box and type the name or scroll through the drop down list.**',
-                             dataset['Municipality'].unique().tolist(),
-                             index=0,
+                             municipalitiesList,
+                             index=municipalityIndex,
                              key='local')
 
 st.markdown('Choose from the different tabs below to look at different \n \

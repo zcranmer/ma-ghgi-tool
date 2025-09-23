@@ -90,11 +90,18 @@ st.markdown("<span style='font-size: 18px;'>Climate Goals Tracker translates the
                     </span>", unsafe_allow_html=True)
                     
 st.text('')
+
+municipalitiesList = goals_df['Municipality'].unique().tolist()
+municipalityIndex = 0
+selectedMunicipality = st.query_params['municipality']
+if selectedMunicipality in municipalitiesList :
+    municipalityIndex = municipalitiesList.index(selectedMunicipality)
+
 streamlit_analytics.start_tracking()
 # Choose municipality
 locality = st.selectbox('**Click in the box and type the name or scroll through the drop down list.**',
-                                 goals_df['Municipality'].unique().tolist(),
-                                 index=0,
+                                 municipalitiesList,
+                                 index=municipalityIndex,
                                  key='locality')
 streamlit_analytics.stop_tracking()
 
