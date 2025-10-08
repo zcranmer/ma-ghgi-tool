@@ -137,8 +137,7 @@ else:
 
 municipalitiesList = dataset['Municipality'].unique().tolist()
 municipalityIndex = 0
-if 'municipality' in st.query_params:
-    selectedMunicipality = st.query_params['municipality']
+selectedMunicipality = st.query_params.get('municipality','')
 if selectedMunicipality in municipalitiesList :
     municipalityIndex = municipalitiesList.index(selectedMunicipality)
 
