@@ -9,6 +9,18 @@ import streamlit as st
 import pandas as pd
 from utils.analytics import init_analytics, track_page, track_event
 
+import streamlit_gtag, inspect
+import importlib.metadata as md
+
+st.write(streamlit_gtag.__file__)
+st.write(inspect.signature(streamlit_gtag.st_gtag))
+
+try:
+    st.write("streamlit-google-analytics-tag version:", md.version("streamlit-google-analytics-tag"))
+except Exception as e:
+    st.write("Could not read package version:", e)
+
+
 init_analytics()
 track_page('About')
 

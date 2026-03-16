@@ -13,8 +13,6 @@ def get_ga_id():
         #st.warning(f"GA_MEASUREMENT_ID not found in secrets. Available keys: {list(st.secrets.keys())}")
         return None
     return st.secrets["GA_MEASUREMENT_ID"]
-    # except Exception:
-    #return None
 
 def init_analytics():
     ga_id = get_ga_id()
@@ -26,6 +24,7 @@ def init_analytics():
 
     st_gtag(
         gtag_id=ga_id,
+        id=ga_id,
         config={"send_page_view": False},
         key='ga_init'
     )
@@ -41,7 +40,9 @@ def track_event(name: str, **params):
     st_gtag(
         event=name,
         parameters=params,
-        key=f"ga_evt_{name}"
+        gtag_id=ga_id,
+        id=ga_id,
+        key=f"ga_evt_{name}",
     )
 
 def track_page(page_name: str):
