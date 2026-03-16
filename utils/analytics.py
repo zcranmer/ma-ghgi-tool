@@ -10,7 +10,7 @@ from streamlit_gtag import st_gtag
 
 def get_ga_id():
     if "GA_MEASUREMENT_ID" not in st.secrets:
-        st.warning(f"GA_MEASUREMENT_ID not found in secrets. Available keys: {list(st.secrets.keys())}")
+        #st.warning(f"GA_MEASUREMENT_ID not found in secrets. Available keys: {list(st.secrets.keys())}")
         return None
     return st.secrets["GA_MEASUREMENT_ID"]
     # except Exception:

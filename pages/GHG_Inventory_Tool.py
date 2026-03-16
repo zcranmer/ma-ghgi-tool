@@ -16,9 +16,6 @@ import pandas as pd
 
 from utils.analytics import get_ga_id, init_analytics, track_page, track_event
 
-st.write("GA secret exists?", "GA_MEASUREMENT_ID" in st.secrets)
-st.write("GA ID prefix:", (get_ga_id() or "")[:2])  # should print "G-"
-
 init_analytics()
 track_page('Home')
 
