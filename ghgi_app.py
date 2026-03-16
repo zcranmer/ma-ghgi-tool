@@ -24,3 +24,7 @@ pg.run()
 st.set_page_config(layout='wide',
                    page_title='MA GHGI Tool'
                    )
+
+from utils.analytics import init_analytics
+
+init_analytics()

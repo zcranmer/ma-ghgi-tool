@@ -12,10 +12,8 @@ import pandas as pd
 import numpy as np
 import streamlit_analytics2 as streamlit_analytics
 from utils.analytics import init_analytics, track_page, track_event
-
 init_analytics()
 track_page('Tracker')
-
 
 def track_selectbox(widget_key: str, widget_name: str, page: str):
     value = st.session_state.get(widget_key)
