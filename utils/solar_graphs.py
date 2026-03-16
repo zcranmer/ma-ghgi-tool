@@ -12,7 +12,8 @@ from plotly.subplots import make_subplots
 # function for solar graphs
 @st.cache_data
 def solar_graph(m,solar):
-    subset = solar[solar['City']==m]
+    solar = solar.rename(columns={'City':'Municipality'})
+    subset = solar[solar['Municipality']==m]
     # new and cumulative graph
     fig = make_subplots(rows=1,cols=2,specs=[[{'type':'scatter'},{'type':'scatter'}]],
                         subplot_titles=('New solar capacity','Cumulative solar capacity'),
@@ -67,7 +68,7 @@ def solar_graph(m,solar):
     st.text('')
     
     # sector pie charts
-    year_set4 = solar[(solar['City']==m)&(solar['Year']==2023)]
+    year_set4 = solar[(solar['Municipality']==m)&(solar['Year']==2023)]
     graph_cols1 = ['Capacity (kW DC) Residential Cumulative',
                   'Capacity (kW DC) Multifamily Cumulative',
                   'Capacity (kW DC) Mixed use Cumulative',

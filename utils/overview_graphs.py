@@ -27,26 +27,39 @@ def m_graph1(m,dataset,start_year,end_year):
                         subplot_titles=('Total MTCO2e','Per Capita MTCO2e'),
                         )
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Total (MTCO2e)'].round(0),name='Total MTCO2e'),
+        go.Scatter(x=subset.Year,y=subset['Total (MTCO2e)'].round(0),name='Total'),
         row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Per Capita (MTCO2e)'].round(2),name='Per Capita MTCO2e'),
+        go.Scatter(x=subset.Year,y=subset['Total Residential (MTCO2e)'].round(0),name='Residential'),
+        row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Total Commercial & Industrial (MTCO2e)'].round(0),name='C&I'),
+        row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Per Capita (MTCO2e)'].round(2),name='Per Capita'),
+        row=1,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Per Capita Residential (MTCO2e)'].round(2),name='Res Per Capita'),
+        row=1,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Per Household Residential (MTCO2e)'].round(2),name='Res Per Household'),
         row=1,col=2)
     
     fig.update_layout(title=dict(text='Emissions in '+m,font=dict(size=24)),
                       yaxis=dict(range=[0,1.4*(subset['Total (MTCO2e)'].max())],
-                                 title=dict(text='Total MTCO2e',font=dict(size=18),standoff=10),
-                                 tickfont=dict(size=14)),
-                      yaxis2=dict(range=[0,1.5*(subset['Per Capita (MTCO2e)'].max())],
-                                  title=dict(text='Per Capita MTCO2e',font=dict(size=18),standoff=0),
-                                  tickfont=dict(size=14))
+                                 title=dict(text='Total MTCO2e',font=dict(size=14,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black')),
+                      yaxis2=dict(range=[0,1.3*(subset['Per Household Residential (MTCO2e)'].max())],
+                                  title=dict(text='Per Capita MTCO2e',font=dict(size=14,color='black'),standoff=0),
+                                  tickfont=dict(size=14,color='black'))
                       )
-    fig.update_xaxes(title=dict(text='Year',font=dict(size=18)),
+    fig.update_xaxes(title=dict(text='Year',font=dict(size=14,color='black')),
                      tickvals=list(range(start_year,end_year+1)),
-                     tickfont=dict(size=14))
+                     tickfont=dict(size=14,color='black'))
     fig.update_traces(mode='markers+lines',hovertemplate=None)
-    fig.update_layout(hovermode='x',showlegend=False,
+    fig.update_layout(hovermode='x',showlegend=True,
                       height=400,width=1000,
+                      annotations=[dict(font=dict(color='black'))]
                       )
     st.plotly_chart(fig)
     

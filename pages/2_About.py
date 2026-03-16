@@ -7,6 +7,10 @@ Created on Fri Dec 15 13:19:14 2023
 
 import streamlit as st
 import pandas as pd
+from utils.analytics import init_analytics, track_page, track_event
+
+init_analytics()
+track_page('About')
 
 st.title('About this tool...')
 st.header('The short version')
@@ -15,7 +19,9 @@ st.write('This tool takes data from U.S. Federal government agencies and MA stat
         emissions. The sectors include: Residential, Commercial (including Municipal), \
         and Industrial. The fuels and energy sources estimated include: electricity, \
         natural gas, fuel oil, propane, wood, gasoline, and diesel. The methods used are \
-            very similar to those in the MAPC GHGI Spreadsheet tool.')
+            very similar to those in the MAPC GHGI Spreadsheet tool. \
+            All data and code used to create this dashboard is available on github:\
+            https://github.com/zcranmer/ma-ghgi-tool.')
 
 #st.header('The Team')
 #st.write('The development of this site is led by Dr. Zana Cranmer (acranmer@bentley.edu) of Bentley University in collaboration \

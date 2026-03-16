@@ -5,3 +5,4 @@ plotly_express
 openpyxl
 matplotlib
 streamlit_analytics2
+streamlit-google-analytics-tag

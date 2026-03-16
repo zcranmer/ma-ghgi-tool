@@ -24,7 +24,7 @@ def m_demog_graph(m,dataset,start_year,end_year):
         go.Scatter(x=subset.Year,y=subset['Population']),
         row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Total Heating Fuel Households']),
+        go.Scatter(x=subset.Year,y=subset['Households']),
         row=2,col=1)
     fig.add_trace(
         go.Scatter(x=subset.Year,y=subset['Median household income']),

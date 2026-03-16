@@ -47,69 +47,66 @@ def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
                    ),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Count EVs 01'],
+        go.Scatter(x=subset.Year,y=subset['Count BEVs 01'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    showlegend=False,legendgroup = '1',
                    name='Electric',line=dict(color=colors_vehicles['Electric Vehicle'])
                    ),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' Count    Fuel Cell Electric Vehicle  Commercial 01',
-                                          ' Count    Fuel Cell Electric Vehicle  Municipal 01',
-                                          ' Count    Fuel Cell Electric Vehicle  Passenger 01',
-                                          ' Count    Fuel Cell Electric Vehicle  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year,y=subset['Count FCEVs 01'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    showlegend=False,legendgroup = '1',
                    name='Fuel Cell',line=dict(color=colors_vehicles['Fuel Cell'])
                    ),
                    row=1,col=1)
     
-    # Line graph of Daily Vehicle Miles Traveled over time
+    # Line graph of Annual Vehicle Miles Traveled over time
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' DailyVMT    Fossil Fuel  Commercial 01',
-                                          ' DailyVMT    Fossil Fuel  Municipal 01',
-                                          ' DailyVMT    Fossil Fuel  Passenger 01',
-                                          ' DailyVMT    Fossil Fuel  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year[:-1],y=subset[['AnnualVMT Commercial Fossil Fuel',
+                                          'AnnualVMT Municipal Fossil Fuel',
+                                          'AnnualVMT Passenger Fossil Fuel',
+                                          'AnnualVMT State Fossil Fuel']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    legendgroup = '1',
                    name='Fossil Fuel',line=dict(color=colors_vehicles['Fossil Fuel'])
                    ),
                    row=1,col=2)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' DailyVMT    Hybrid Electric Vehicle  Commercial 01',
-                                          ' DailyVMT    Hybrid Electric Vehicle  Municipal 01',
-                                          ' DailyVMT    Hybrid Electric Vehicle  Passenger 01',
-                                          ' DailyVMT    Hybrid Electric Vehicle  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year[:-1],y=subset[['AnnualVMT Commercial Hybrid Electric Vehicle',
+                                          'AnnualVMT Municipal Hybrid Electric Vehicle',
+                                          'AnnualVMT Passenger Hybrid Electric Vehicle',
+                                          'AnnualVMT State Hybrid Electric Vehicle']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    legendgroup = '1',
                    name='Gas Hybrid',line=dict(color=colors_vehicles['Hybrid Electric'])
                    ),
                    row=1,col=2)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' DailyVMT    Plug in Hybrid Electric  Commercial 01',
-                                          ' DailyVMT    Plug in Hybrid Electric  Municipal 01',
-                                          ' DailyVMT    Plug in Hybrid Electric  Passenger 01',
-                                          ' DailyVMT    Plug in Hybrid Electric  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year[:-1],y=subset[['AnnualVMT Commercial Plug-in Hybrid Electric',
+                                          'AnnualVMT Municipal Plug-in Hybrid Electric',
+                                          'AnnualVMT Passenger Plug-in Hybrid Electric',
+                                          'AnnualVMT State Plug-in Hybrid Electric']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    legendgroup = '1',
                    name='Plug-in Hybrid',line=dict(color=colors_vehicles['Plug-in Hybrid'])
                    ),
                    row=1,col=2)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' DailyVMT    Electric Vehicle  Commercial 01',
-                                          ' DailyVMT    Electric Vehicle  Municipal 01',
-                                          ' DailyVMT    Electric Vehicle  Passenger 01',
-                                          ' DailyVMT    Electric Vehicle  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year[:-1],y=subset[['AnnualVMT Commercial Electric Vehicle',
+                                          'AnnualVMT Municipal Electric Vehicle',
+                                          'AnnualVMT Passenger Electric Vehicle',
+                                          'AnnualVMT State Electric Vehicle']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    legendgroup = '1',
                    name='Electric',line=dict(color=colors_vehicles['Electric Vehicle'])
                    ),
                    row=1,col=2)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset[[' DailyVMT    Fuel Cell Electric Vehicle  Commercial 01',
-                                          ' DailyVMT    Fuel Cell Electric Vehicle  Municipal 01',
-                                          ' DailyVMT    Fuel Cell Electric Vehicle  Passenger 01',
-                                          ' DailyVMT    Fuel Cell Electric Vehicle  State 01']].sum(axis=1),
+        go.Scatter(x=subset.Year[:-1],y=subset[['AnnualVMT Commercial Fuel Cell Electric Vehicle',
+                                          'AnnualVMT Municipal Fuel Cell Electric Vehicle',
+                                          'AnnualVMT Passenger Fuel Cell Electric Vehicle',
+                                          'AnnualVMT State Fuel Cell Electric Vehicle']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    legendgroup = '1',
                    name='Fuel Cell',line=dict(color=colors_vehicles['Fuel Cell'])),
@@ -117,28 +114,28 @@ def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
     
     # Transportation energy
     fig.add_trace(
-        go.Scatter(x=subset.Year[:-1],y=subset['Total Gasoline (MMBTU)'],
+        go.Scatter(x=subset.Year[:-2],y=subset['Total Gasoline (MMBTU)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    showlegend=False,legendgroup = '2',
                    name='Gasoline',line=dict(color=colors_fuel['Gasoline'])
                    ),
                    row=2,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year[:-1],y=subset['Total Diesel (MMBTU)'],
+        go.Scatter(x=subset.Year[:-2],y=subset['Total Diesel (MMBTU)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    showlegend=False,legendgroup = '2',
                    name='Diesel',line=dict(color=colors_fuel['Diesel'])
                    ),
                    row=2,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year[:-1],y=subset['Total Vehicle Electricity (MMBTU)'],
+        go.Scatter(x=subset.Year[:-2],y=subset['Total Vehicle Electricity (MMBTU)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    showlegend=False,legendgroup = '2',
                    name='Electricity',line=dict(color=colors_fuel['Electricity'])
                    ),
                    row=2,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year[:-1],y=subset[['Total Public Transportation (MMBTU)']].sum(axis=1),
+        go.Scatter(x=subset.Year[:-2],y=subset[['Total Public Transportation (MMBTU)']].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    showlegend=False,legendgroup = '2',
                    name='Electricity',line=dict(color='lightsteelblue')
@@ -147,28 +144,28 @@ def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
     
     # Transportation emissions
     fig.add_trace(
-        go.Scatter(x=subset.Year[:-1],y=subset['Total Gasoline (MTCO2e)'],
+        go.Scatter(x=subset.Year[:-2],y=subset['Total Gasoline (MTCO2e)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    legendgroup = '2',
                    name='Gasoline',line=dict(color=colors_fuel['Gasoline'])
                    ),
                    row=2,col=2)
     fig.add_trace(
-        go.Scatter(x=subset.Year[:-1],y=subset['Total Diesel (MTCO2e)'],
+        go.Scatter(x=subset.Year[:-2],y=subset['Total Diesel (MTCO2e)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    legendgroup = '2',
                    name='Diesel',line=dict(color=colors_fuel['Diesel'])
                    ),
                    row=2,col=2)
     fig.add_trace(
-        go.Scatter(x=subset.Year[:-1],y=subset['Total Vehicle Electricity (MTCO2e)'],
+        go.Scatter(x=subset.Year[:-2],y=subset['Total Vehicle Electricity (MTCO2e)'],
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
                    legendgroup = '2',
                    name='Electricity',line=dict(color=colors_fuel['Electricity'])
                    ),
                    row=2,col=2)
     fig.add_trace(
-        go.Scatter(x=subset.Year[:-1],y=subset[['Total Public Transportation (MTCO2e)',
+        go.Scatter(x=subset.Year[:-2],y=subset[['Total Public Transportation (MTCO2e)',
                                                 'MBTA Diesel (MTCO2e)','MBTA Electricity (MTCO2e)','MBTA CNG (MTCO2e)'
                                                 ]].sum(axis=1),
                    hoverinfo='x+y+name',mode='lines',stackgroup='one',
@@ -181,7 +178,7 @@ def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
                       title=dict(text='Share of vehicles and miles driven in '+m,font=dict(size=24)),
                       yaxis=dict(title=dict(text='Vehicles',font=dict(size=18,color='black'),standoff=10),
                                  tickfont=dict(size=14,color='black')),
-                      yaxis2=dict(title=dict(text='Daily VMT',font=dict(size=18,color='black'),standoff=0),
+                      yaxis2=dict(title=dict(text='Annual VMT',font=dict(size=18,color='black'),standoff=0),
                                  tickfont=dict(size=14,color='black')),
                       yaxis3=dict(title=dict(text='MMBTU',font=dict(size=18,color='black'),standoff=10),
                                  tickfont=dict(size=14,color='black')),

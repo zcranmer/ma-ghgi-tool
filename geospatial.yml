@@ -1,0 +1,36 @@
+
+name: geospatial
+channels:
+  - conda-forge
+dependencies:
+  # ---- Core ----
+  - python=3.12
+
+  # ---- Scientific stack (compiled; keep on conda-forge) ----
+  - numpy
+  - pandas
+  - scipy
+  - plotly
+
+  # ---- Geospatial ----
+  - geopandas
+  - shapely
+  - pyproj
+  - fiona
+  - rtree
+
+  # ---- Excel support ----
+  - openpyxl        # for .xlsx files
+
+  # ---- Dev / IDE tools ----
+  - jupyterlab
+  - ipykernel
+  - spyder
+
+  # ---- pip-only packages ----
+  - pip
+  - pip:
+      - xlrd                    # for .xls files
+      - streamlit
+      - streamlit-analytics2
+      - streamlit-gtag

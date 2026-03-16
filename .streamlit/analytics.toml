@@ -4,8 +4,8 @@ enabled = true
 [storage]
 save = false
 type = "json"
-save_to_json = "path/to/file.json"
-load_from_json = "path/to/file.json"
+save_to_json = ".streamlit/file.json"
+load_from_json = ".streamlit/file.json"
 
 [logs]
 verbose = false

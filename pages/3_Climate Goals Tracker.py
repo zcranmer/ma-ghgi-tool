@@ -11,6 +11,30 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import streamlit_analytics2 as streamlit_analytics
+from utils.analytics import init_analytics, track_page, track_event
+
+init_analytics()
+track_page('Tracker')
+
+
+def track_selectbox(widget_key: str, widget_name: str, page: str):
+    value = st.session_state.get(widget_key)
+    if value is None:
+        return
+
+    # Avoid duplicate sends (e.g., reruns that don't reflect a user change)
+    last_key = f"__last_{widget_key}"
+    if st.session_state.get(last_key) == value:
+        return
+    st.session_state[last_key] = value
+
+    track_event(
+        "select_change",
+        page=page,
+        widget_name=widget_name,
+        value=str(value),
+    )
+
 
 st.set_page_config(layout='wide',
                    page_title='Climate Goals Tracker'
@@ -63,19 +87,19 @@ with col3:
 
 # Load data either from the main app or from the data files
 start_year = 2017
+goal_year = 2024
 
 if 'df' not in st.session_state:
     from utils.load_data import load_data
-    goals_df, geo, solar_df, stations, hp_df = load_data(start_year)
+    goals_df, geo, solar_df = load_data(start_year)
 else:
     goals_df = st.session_state.df
     solar_df = st.session_state.df_solar
-    hp_df = st.session_state.df_hp
 
-    
-hp_df.loc[hp_df['Municipality']=='Concord','Installed heat pumps (accounts)'] = 839 # from Concord MLP https://storymaps.arcgis.com/stories/a665b137c40b4174841c52bb474962ec
+# no longer needs to be added here, built into the whole dataset
+#goals_df.loc[goals_df['Municipality']=='Concord','Installed heat pumps (accounts)'] = 839 # from Concord MLP https://storymaps.arcgis.com/stories/a665b137c40b4174841c52bb474962ec
 
-hp_df['Installed heat pumps (accounts)'] = hp_df['Installed heat pumps (accounts)'].astype('str').replace({'*': 0})
+goals_df['Cumulative heat pumps all (accounts)'] = goals_df['Cumulative heat pumps all (accounts)'].astype('str').replace({'*': 0})
 
 st.title(f'Climate Goals Tracker')
 st.markdown("<span style='font-size: 18px;'>Climate Goals Tracker provides information to \
@@ -102,7 +126,10 @@ streamlit_analytics.start_tracking()
 locality = st.selectbox('**Click in the box and type the name or scroll through the drop down list.**',
                                  municipalitiesList,
                                  index=municipalityIndex,
-                                 key='locality')
+                                 key='locality',
+                                 on_change=track_selectbox,
+                                 kwargs={"widget_key": "locality", "widget_name": "tracker_municipality", "page": "Tracker"}
+                                 )
 streamlit_analytics.stop_tracking()
 
 st.subheader(f'Consumer-Level Decarbonization Adoption in {locality}: progress needed')
@@ -112,20 +139,22 @@ st.subheader(f'Consumer-Level Decarbonization Adoption in {locality}: progress n
 # State values
 # Values from CECP page    
 ma_2024_evs = 139085 #139969 # EVs and PHEVs
+ma_2025_evs = 166296 # EVs and PHEVs
 ma_2024_hps = 125678 # HPs
+ma_2025_hps = 156245 # HPs as of 2025
 ma_2022_pvs = 4754000 # PVs All
 ma_2022_pvs_res = 1048691 # PVs Residential only
 ma_2022_pvs_res_count = 133901 # current count of residential solar projects in MA 
 ma_pv_avg = ma_2022_pvs_res/ma_2022_pvs_res_count
     
-ma_numbers_cecp = [ma_2024_evs,
-                  ma_2024_hps,
+ma_numbers_cecp = [ma_2025_evs,
+                  ma_2025_hps,
                   ma_2022_pvs_res,
                   ma_2022_pvs_res_count 
                   ]
     
-growth_numbers_ma = [int(round(ma_2024_evs*0.9,-2)),
-                      int(round(ma_2024_hps*0.5,-2)),
+growth_numbers_ma = [int(round(ma_2025_evs*0.9,-2)),
+                      int(round(ma_2025_hps*0.5,-2)),
                       int(round(ma_2022_pvs_res*0.1,0)),
                       int(round(ma_2022_pvs_res*0.1/ma_pv_avg,0)) # growth in count of projects is based on 10% growth in kW capacity
                       ]
@@ -136,15 +165,15 @@ growth_numbers_ma = [127000,
                      ]
 
 # Local data    
-if hp_df[hp_df['Municipality']==locality].empty:
-    add_df = pd.DataFrame(data=np.array([[locality,0,0]]),columns=hp_df.columns)
-    hp_df = pd.concat([hp_df,add_df])
+#if goals_df[goals_df['Municipality']==locality].empty:
+#    add_df = pd.DataFrame(data=np.array([[locality,0,0]]),columns=goals_df.columns)
+#    goals_df = pd.concat([goals_df,add_df])
 
-locality_numbers = [goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==2025),'Count Res EVs 01'].round(0).astype('int').item(),
-                        pd.to_numeric(hp_df.loc[(hp_df['Municipality']==locality),'Installed heat pumps (accounts)'],errors='coerce').astype('int').item(),
-                        solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Capacity (kW DC) Residential Cumulative'].round(0).astype('int').item(),
-                        solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Project Count Residential Cumulative'].round(0).astype('int').item(),
-                        ]
+locality_numbers = [goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==goal_year+2),'Count Res EVs 01'].round(0).astype('int').item(),
+                    goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==goal_year),'Cumulative heat pumps all (accounts)'].astype('int').item(),
+                    solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Capacity (kW DC) Residential Cumulative'].round(0).astype('int').item(),
+                    solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Project Count Residential Cumulative'].round(0).astype('int').item(),
+                    ]
 
 locality_nums = locality_numbers.copy()
 if locality_numbers[1] == 0:
@@ -155,9 +184,9 @@ growth_numbers = [int(round(locality_numbers[0]*0.9,0)),
                   int(round(locality_numbers[2]*0.1,0)) # solar in kW
                   ]
 
-locality_hh = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==2023),'Households'].item()
-locality_vehicles = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==2025),'Count Res Total 01'].item()
-locality_respv_avg = round(solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Capacity (kW DC) Residential Cumulative'].item()/solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2023),'Project Count Residential Cumulative'].item(),2)
+locality_hh = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==goal_year),'Households'].item()
+locality_vehicles = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==goal_year+1),'Total Residential Vehicles 01'].item()
+locality_respv_avg = round(solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Capacity (kW DC) Residential Cumulative'].item()/solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==goal_year),'Project Count Residential Cumulative'].item(),2)
 
 growth = [f'{growth_numbers[0]:,}', # EV count
           f'{growth_numbers[1]:,}', # HP count
@@ -217,7 +246,7 @@ df = pd.DataFrame(data = {'Measure':['Electric Vehicles','Heat Pumps','Solar'],
                               #'%':['90%','50%','10%'],
                               #'2030 Goal':local_goal,
                               locality:[locality_nums[0],locality_nums[1],locality_nums[3]],
-                              'Most Recent Count Date':['2024','2023','2022'],
+                              'Most Recent Count Date':[goal_year+1,goal_year,'2022'],
                               locality+' yearly growth to meet goal':[growth[0],growth[1],growth[3]]
                               })
     
@@ -264,11 +293,11 @@ df[locality+' yearly growth to meet goal'] = df[locality+' yearly growth to meet
 st.markdown("""
             <div class="custom-bullets1">
             <ul>
-                <li>""" + f"In {locality} at the end of 2024, there were {locality_numbers[0]:,} passenger electric vehicles (EVs). \
+                <li>""" + f"In {locality} at the end of {goal_year+1}, there were {locality_numbers[0]:,} passenger electric vehicles (EVs). \
                     Based on the statewide goal of 900,000 in 2030, {growth_numbers[0]:,} new EVs need to be adopted this year and \
                         every year thereafter until 2030. This represents <strong>90%</strong> of the total number of EVs currently registered.\
                         " + """</li>
-                <li>""" + f"In {locality} at the end of 2023, there were {local_hp_num} heat pumps installed. \
+                <li>""" + f"In {locality} at the end of {goal_year}, there were {local_hp_num} heat pumps installed. \
                     {hp_masssave_statement}\
                     Based on the state goal of 500,000 in 2030, {growth_numbers[1]:,} new installations are needed this year \
                     and every year thereafter until 2030. This represents <strong>50%</strong> of the total number of heat pump installations currently. \
@@ -375,27 +404,27 @@ st.markdown("<span style='font-size: 14px;'>For simplicity, the Climate Goals Tr
                 Currently, achieving the 2030 statewide goals means the following growth is required: \
                 </span>", unsafe_allow_html=True)
                 
-st.markdown("""
+st.markdown(f"""
             <div class="custom-bullets">
             <ul>
-                <li><p><strong>EVs</strong>: In Massachusetts at the end of 2024, there were 139,969 EVs. \
+                <li><p><strong>EVs</strong>: In Massachusetts at the end of {goal_year+1}, there were {ma_2025_evs:,} EVs. \
                     In order to meet the state goal, Massachusetts needs 900,000 EVs by 2030 (that represents \
                     about 18% of the 4.9 million passenger vehicles registered in Massachusetts). \
                     Assuming straight-line growth, 127,000 EVs need to be added annually from now to 2030. \
-                    127,000 is about <strong>90%</strong> of the 139,969 EVs currently registered in the state. \
+                    127,000 is about <strong>90%</strong> of the {ma_2025_evs:,} EVs currently registered in the state. \
                     We therefore assume that every community should also annually add a number of EVs equal to \
-                    90% of the EVs it had at the end of 2024. </p>
+                    90% of the EVs it had at the end of {goal_year+1}. </p>
                     <p>For example, a community with 100 EVs at the end of \
-                    2024 would need to add an additional 90 EVs this year and every year thereafter \
+                    {goal_year+1} would need to add an additional 90 EVs this year and every year thereafter \
                     for a total of 640 in 2030.</p></li>
                 <li><p><strong>Heat pumps</strong>: The 2030 goal is 500,000 heat pump installations or about 16% \
-                    of all 2.8 million households need to adopt heat pumps by 2030. At the end of 2024, \
-                    there were 125,678 heat pumps across the state. Meeting the 2030 goal will require adding \
+                    of all 2.8 million households need to adopt heat pumps by 2030. At the end of {goal_year+1}, \
+                    there were {ma_2025_hps:,} heat pumps across the state. Meeting the 2030 goal will require adding \
                     62,000 more heat pump installations this year and each year after that. 62,000 is \
-                    <strong>50%</strong> of the 125,678 heat pumps that are currently installed in the state. \
+                    <strong>50%</strong> of the {ma_2025_hps:,} heat pumps that are currently installed in the state. \
                     We therefore assume that every community should also annually add the number of heat pump \
-                    installations equal to 50% of heat pumps it had at the end of 2024. </p>
-                    <p>For example, a community with 100 heat pumps installed by the end of 2023 would need to add 50 additional heat pumps \
+                    installations equal to 50% of heat pumps it had at the end of {goal_year+1}. </p>
+                    <p>For example, a community with 100 heat pumps installed by the end of {goal_year} would need to add 50 additional heat pumps \
                     this year and every year thereafter for a total of 400 in 2030.</p></li>
                 <li><p><strong>Solar PVs</strong>: The 2030 goal is 8,360 megawatts (MW) of total solar generation \
                     in Massachusetts. Based on recent years of solar data, residential solar has made up about 25% \
