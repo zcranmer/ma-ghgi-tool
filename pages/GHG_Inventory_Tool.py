@@ -198,7 +198,6 @@ with tab1:
             st.markdown(' ')
             st.markdown(' ')
         
-        st.markdown(' ')
         
         st.metric(label=f'{default_year} % Households with solar panels installed.',
                   value=f'{hh_w_pvs:,.2f}',
@@ -226,9 +225,9 @@ with tab1:
                   value=f'{pct_evs:,.2f}',
                   )
         if municipality in top1_ev_adopters['Municipality'].to_numpy():
-            st.markdown(f'{municipality} is in the top 1% highest adoption rates for residential solar in MA.')
+            st.markdown(f'{municipality} is in the top 1% highest adoption rates for electric vehicles in MA.')
         elif municipality in top10_ev_adopters['Municipality'].to_numpy():
-            st.markdown(f'{municipality} is in the top 10% highest adoption rates for residential solar in MA.')
+            st.markdown(f'{municipality} is in the top 10% highest adoption rates for electric vehicles in MA.')
         else:
             st.markdown(' ')
             st.markdown(' ')
@@ -628,7 +627,7 @@ with tab7:
     "% EVs\n(2025)": st.column_config.NumberColumn(format="%.2f"),
     }
 
-    st.data_editor(table, use_container_width=True,hide_index=True,disabled=True,
+    st.data_editor(table, hide_index=True, disabled=True,
                    column_config=column_config)
     
     st.markdown('**Which dataset would you like to map?**')
@@ -678,7 +677,10 @@ with tab7:
                          kwargs={"widget_key": "data2", "widget_name": "compare_scatter", "page": "Home"}
                          )
     
-    dataset_scatter = scatter_explore(dataset,data2,year7,data1,municipality,data0)
+    col1, col2, col3 = st.columns([1,4,1])
+    
+    with col2:
+        dataset_scatter = scatter_explore(dataset,data2,year7,data1,municipality,data0)
     
 
 #streamlit_analytics.stop_tracking()

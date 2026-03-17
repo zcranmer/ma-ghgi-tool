@@ -64,7 +64,7 @@ def compare_table(dataset,main_muni,peer_munis):
     # Missing data handling: keep NaN (Streamlit shows blanks) or fill with "—"
     table = table.fillna("—")
     
-    return table.reset_index()
+    return table
 
 
 def map_figure(dataset,solar_data,geodata,y,d):
@@ -292,13 +292,13 @@ def scatter_explore(dataset,x_val,y,d,m,p):
                    ),
     row=1,col=1)
     
-    fig.update_layout(hovermode='closest',
-                      title=dict(text=f'Comparing {d} and {x_val}',font=dict(size=24)),
-                      yaxis=dict(title=dict(text=d,font=dict(size=18,color='black'),standoff=10),
+    fig.update_layout(height=400,width=500,
+                      hovermode='closest',
+                      title=dict(text=f'Comparing {d} <br> and {x_val}',font=dict(size=20)),
+                      yaxis=dict(title=dict(text=d,font=dict(size=14,color='black'),standoff=10),
                                  tickfont=dict(size=14,color='black')),
-                      xaxis=dict(title=dict(text=x_val,font=dict(size=18,color='black')),
+                      xaxis=dict(title=dict(text=x_val,font=dict(size=14,color='black')),
                                  tickfont=dict(size=14,color='black')),
-                      height=400,width=500,
                       #annotations=[dict(font=dict(color='black'),showarrow=False)]
                       )
     
