@@ -212,7 +212,6 @@ with tab1:
             st.markdown(' ')
             st.markdown(' ')
         
-        st.markdown(' ')
         
         st.metric(label=f'{default_year} Total GHG emissions in MTCO2e.',
                     #label='Total 2022 GHGs in MTCO2e',
@@ -234,7 +233,6 @@ with tab1:
             st.markdown(' ')
             st.markdown(' ')
         
-        st.markdown(' ')
             
         st.metric(label=f'{default_year} Average residential utility energy consumption in MMBTU.',
                   value=f'{hh_energy:,.2f}',
@@ -244,7 +242,6 @@ with tab1:
         st.markdown(' ')
         st.markdown(' ')
         
-        st.markdown(' ')
         
         #st.markdown('% change from '+str(base_year)+'.')
         st.metric(label = f'% change in GHG emissions from {base_year}.',
