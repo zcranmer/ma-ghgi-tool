@@ -13,6 +13,7 @@ import pandas as pd
 #import plotly.graph_objects as go
 #from plotly.subplots import make_subplots
 #import streamlit_analytics2 as streamlit_analytics
+from streamlit_gtag import st_gtag
 
 from utils.analytics import get_ga_id, init_analytics, track_page, track_event
 
@@ -116,13 +117,21 @@ if selectedMunicipality in municipalitiesList :
 
 
 #streamlit_analytics.start_tracking()
+def track_municipality_change():
+    value=st.session_state['local']
+    st_gtag(
+        event='municipality_selected',
+        parameters={'municipality':value,
+                    },
+        )
+
 st.markdown('**Which city or town would you like to explore?**')
 municipality = st.selectbox('**To make a selection, click in the box and type the name or scroll through the drop down list.**',
                              municipalitiesList,
                              index=municipalityIndex,
                              key='local',
-                             on_change=track_selectbox,
-                             kwargs={"widget_key": "local", "widget_name": "municipality", "page": "Home"}
+                             on_change=track_municipality_change,
+                             #kwargs={"widget_key": "local", "widget_name": "municipality", "page": "Home"}
                              )
 
 st.markdown('Choose from the different tabs below to look at different \n \
