@@ -13,6 +13,11 @@ import plotly.express as px
 #from plotly.subplots import make_subplots
 import streamlit_analytics2 as streamlit_analytics
 
+from utils.analytics import init_analytics
+
+init_analytics()
+
+
 pg = st.navigation([st.Page('pages/GHG_Inventory_Tool.py'),
                     st.Page('pages/2_About.py'),
                     st.Page('pages/3_Climate Goals Tracker.py'),
@@ -25,6 +30,4 @@ st.set_page_config(layout='wide',
                    page_title='MA GHGI Tool'
                    )
 
-from utils.analytics import init_analytics
 
-#init_analytics()
