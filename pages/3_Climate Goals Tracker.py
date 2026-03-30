@@ -147,11 +147,11 @@ ma_2022_pvs_res = 1048691 # PVs Residential only
 ma_2023_pvs_res = 1085508
 ma_2022_pvs_res_count = 133901 # current count of residential solar projects in MA 
 ma_2023_pvs_res_count = 137587 # does not include projects with "unknown" type
-ma_pv_avg = ma_2022_pvs_res/ma_2022_pvs_res_count
+ma_pv_avg = ma_2023_pvs_res/ma_2023_pvs_res_count
     
 ma_numbers_cecp = [ma_2025_evs,
                   ma_2025_hps,
-                  ma_2022_pvs_res,
+                  ma_2023_pvs_res,
                   ma_2023_pvs_res_count 
                   ]
     
@@ -160,10 +160,10 @@ growth_numbers_ma = [int(round(ma_2025_evs*0.9,-2)),
                       int(round(ma_2023_pvs_res*0.1,0)),
                       int(round(ma_2023_pvs_res*0.1/ma_pv_avg,0)) # growth in count of projects is based on 10% growth in kW capacity
                       ]
-growth_numbers_ma = [127000,
-                     62000,
-                     107200,
-                     '13,400'
+growth_numbers_ma = [147000,   # (900,000-166,296)/5
+                     69000,    # (500,000 - 156,245)/5
+                     201000,   # (2,090,000 - 1,085,508)/5
+                     '25,100'  # above divided by 8
                      ]
 
 # Local data    
@@ -304,7 +304,7 @@ st.markdown("""
                     Based on the state goal of 500,000 in 2030, {growth_numbers[1]:,} new installations are needed this year \
                     and every year thereafter until 2030. This represents <strong>50%</strong> of the total number of heat pump installations currently. \
                     " + """</li>
-                <li>""" + f"In {locality} at the end of 2022, there was {locality_numbers[2]:,} kW of residential solar installed. \
+                <li>""" + f"In {locality} at the end of {solar_year}, there was {locality_numbers[2]:,} kW of residential solar installed. \
                     Based on the state goal of 8,360 MW in 2030, {growth_numbers[2]:,} kW needs to be installed this year \
                     and thereafter until 2030. This translates to an additional {growth[3]} households adopting solar; \
                     or about <strong>10%</strong> of the total number of households that currently have solar installations.\
@@ -412,8 +412,8 @@ st.markdown(f"""
                 <li><p><strong>EVs</strong>: In Massachusetts at the end of {vehicle_year}, there were {ma_2025_evs:,} EVs. \
                     In order to meet the state goal, Massachusetts needs 900,000 EVs by 2030 (that represents \
                     about 18% of the 4.9 million passenger vehicles registered in Massachusetts). \
-                    Assuming straight-line growth, 127,000 EVs need to be added annually from now to 2030. \
-                    127,000 is about <strong>90%</strong> of the {ma_2025_evs:,} EVs currently registered in the state. \
+                    Assuming straight-line growth, {growth_numbers_ma[0]:,} EVs need to be added annually from now to 2030. \
+                    {growth_numbers_ma[0]:,} is about <strong>90%</strong> of the {ma_2025_evs:,} EVs currently registered in the state. \
                     We therefore assume that every community should also annually add a number of EVs equal to \
                     90% of the EVs it had at the end of {vehicle_year}. </p>
                     <p>For example, a community with 100 EVs at the end of \
@@ -422,7 +422,7 @@ st.markdown(f"""
                 <li><p><strong>Heat pumps</strong>: The 2030 goal is 500,000 heat pump installations or about 16% \
                     of all 2.8 million households need to adopt heat pumps by 2030. At the end of {goal_year+1}, \
                     there were {ma_2025_hps:,} heat pumps across the state. Meeting the 2030 goal will require adding \
-                    62,000 more heat pump installations this year and each year after that. 62,000 is \
+                    {growth_numbers_ma[1]:,} more heat pump installations this year and each year after that. {growth_numbers_ma[1]:,} is \
                     <strong>50%</strong> of the {ma_2025_hps:,} heat pumps that are currently installed in the state. \
                     We therefore assume that every community should also annually add the number of heat pump \
                     installations equal to 50% of heat pumps it had at the end of {goal_year}. </p>
@@ -432,8 +432,8 @@ st.markdown(f"""
                     in Massachusetts. Based on recent years of solar data, residential solar has made up about 25% \
                     of total solar installed in Massachusetts. That amounts to 2,090 MW of residential solar in 2030. \
                     At the end of {solar_year} (the latest year of complete data available), residential solar installed \
-                    capacity was 1,049 MW. Meeting the 2030 goals will require adding 107 MW of solar in 2025 and \
-                    each year after that. That translates to approximately 13,400 new projects each year, assuming \
+                    capacity was 1,085 MW. Meeting the 2030 goals will require adding 201 MW of solar in 2026 and \
+                    each year after that. That translates to approximately {growth_numbers_ma[3]} new projects each year, assuming \
                     that the average size of current residential projects of 8 kilowatts (kW). Putting it in perspective, \
                     each year Massachusetts residents need to adopt an additional 10% more solar than there are currently \
                     operating.</p>
