@@ -20,11 +20,11 @@ init_analytics()
 track_page('Home')
 
 def track_selectbox(widget_key: str, widget_name: str, page: str):
+    #st.markdown(f'GA request is firing for {widget_name} on {page} page.')
     value = st.session_state.get(widget_key)
     if value is None:
         return
 
-    # Avoid duplicate sends (e.g., reruns that don't reflect a user change)
     last_key = f"__last_{widget_key}"
     if st.session_state.get(last_key) == value:
         return
@@ -416,12 +416,12 @@ with tab4:
     st.header('Solar Energy Adoption')
     from utils.solar_graphs import solar_graph
     st.text(' ')
-    st.markdown('Note: Solar data is from the MassCEC PTS as of Feb 2024 and data for 2023 and 2024 are incomplete.')
+    st.markdown('Note: Solar data for 2024 and beyond is incomplete. Date of last available data varies by source.')
     st.text(' ')
         
     # add widget w/ total capacity, n projects, avg project size?
-    total_cap = solar.loc[(solar['City']==municipality)&(solar['Year']==end_year),'Capacity (kW DC) All Cumulative'].round(decimals=0).astype('int').item()
-    total_num = solar.loc[(solar['City']==municipality)&(solar['Year']==end_year),'Project Count All Cumulative'].round(decimals=0).astype('int').item()
+    total_cap = solar.loc[(solar['City']==municipality)&(solar['Year']==end_year),'Cumulative Capacity (kW DC) All'].round(decimals=0).astype('int').item()
+    total_num = solar.loc[(solar['City']==municipality)&(solar['Year']==end_year),'Cumulative Project Count All'].round(decimals=0).astype('int').item()
     avg_size = total_cap/total_num
     est_energy = total_cap*8760*0.13*0.001
     col1,col2,col3,col4  = st.columns(4)
@@ -447,7 +447,7 @@ with tab4:
     # add graphs: new and cumulative capacity, pie by sector cap and n
     year_set4 = solar_graph(municipality,solar)
     
-    st.write('Data Sources: MassCEC Production Tracking System')
+    st.write('Data Sources: MassCEC Production Tracking System, DOER Qualified Generation Units')
 
 
 ############# TRANSPORTATION TAB ############################################

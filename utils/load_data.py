@@ -114,28 +114,29 @@ def load_data(start_year):
                     'Cumulative heat pumps all (accounts)','Cumulative heat pumps hvac (accounts)',
                     # add solar data here once cleaned set is added in
                     'Capacity (kW DC) All',
-                    'Capacity (kW DC) Residential (3 or fewer dwelling units per building)',
-                    'Capacity (kW DC) All Cumulative',
-                    'Capacity (kW DC) Residential Cumulative',
-                    'Capacity (kW DC) Multifamily Cumulative',
-                    'Capacity (kW DC) Mixed use Cumulative',
-                    'Capacity (kW DC) Commercial Cumulative',
-                    'Capacity (kW DC) Municipal Cumulative',
-                    'Capacity (kW DC) State/Fed Cumulative',
-                    'Capacity (kW DC) Industrial Cumulative',
-                    'Capacity (kW DC) Agricultural Cumulative',
-                    'Capacity (kW DC) Community Solar Cumulative',
-                    'Capacity (kW DC) Other Cumulative',
-                    'Project Count Residential Cumulative',
-                    'Project Count Multifamily Cumulative',
-                    'Project Count Mixed use Cumulative',
-                    'Project Count Commercial Cumulative',
-                    'Project Count Municipal Cumulative',
-                    'Project Count State/Fed Cumulative',
-                    'Project Count Industrial Cumulative',
-                    'Project Count Agricultural Cumulative',
-                    'Project Count Community Solar Cumulative',
-                    'Project Count Other Cumulative',
+                    'Capacity (kW DC) Residential',
+                    'Capacity (kW DC) Commercial',
+                    'Cumulative Capacity (kW DC) All',
+                    'Cumulative Capacity (kW DC) Residential',
+                    'Cumulative Capacity (kW DC) Multi-family residential',
+                    'Cumulative Capacity (kW DC) Mixed Use',
+                    'Cumulative Capacity (kW DC) Commercial',
+                    'Cumulative Capacity (kW DC) Municipal',
+                    'Cumulative Capacity (kW DC) Industrial',
+                    'Cumulative Capacity (kW DC) Agricultural',
+                    'Cumulative Capacity (kW DC) Community Solar',
+                    'Cumulative Capacity (kW DC) Other',
+                    'Cumulative Capacity (kW DC) Unknown',
+                    'Cumulative Project Count Residential',
+                    'Cumulative Project Count Multi-family residential',
+                    'Cumulative Project Count Mixed Use',
+                    'Cumulative Project Count Commercial',
+                    'Cumulative Project Count Municipal',
+                    'Cumulative Project Count Industrial',
+                    'Cumulative Project Count Agricultural',
+                    'Cumulative Project Count Community Solar',
+                    'Cumulative Project Count Other',
+                    'Cumulative Project Count Unknown',
                     # transportation data
                     'Count FFs 01','Count FFs 07', 'Count GHYs 01', 'Count GHYs 07', 'Count PHEVs 01',
                     'Count PHEVs 07', 'Count BEVs 01', 'Count BEVs 07', 'Count FCEVs 01',
@@ -263,7 +264,7 @@ def load_data(start_year):
     if 'gdf' not in st.session_state:
         st.session_state.gdf = gdf
     
-    df_solar = pd.read_csv('datasets/solar_data.csv')
+    df_solar = pd.read_csv('datasets/solar_data_updated.csv')
     if 'df_solar' not in st.session_state:
         st.session_state.df_solar = df_solar
     

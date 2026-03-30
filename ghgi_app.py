@@ -27,4 +27,4 @@ st.set_page_config(layout='wide',
 
 from utils.analytics import init_analytics
 
-init_analytics()
+#init_analytics()

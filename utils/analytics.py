@@ -9,9 +9,6 @@ import streamlit as st
 from streamlit_gtag import st_gtag
 
 def get_ga_id():
-    if "GA_MEASUREMENT_ID" not in st.secrets:
-        #st.warning(f"GA_MEASUREMENT_ID not found in secrets. Available keys: {list(st.secrets.keys())}")
-        return None
     return st.secrets["GA_MEASUREMENT_ID"]
 
 def init_analytics():
@@ -36,14 +33,22 @@ def track_event(name: str, **params):
     ga_id = get_ga_id()
     if not ga_id:
         return
+    
+    n = st.session_state.get("_ga_evt_n", 0) + 1
+    st.session_state["_ga_evt_n"] = n
 
     st_gtag(
         event=name,
         parameters=params,
         gtag_id=ga_id,
         id=ga_id,
-        key=f"ga_evt_{name}",
+        key=f"ga_evt_{n}",
     )
 
 def track_page(page_name: str):
+    last = st.session_state.get("_last_tracked_page")
+    if last == page_name:
+        return
+    st.session_state["_last_tracked_page"] = page_name
+
     track_event("screen_view", screen_name=page_name)

@@ -109,7 +109,7 @@ def ms_hp_graph(m,dataset,start_year,end_year):
 
 
 def bldg_graph0(m,dataset,start_year,end_year):
-    years = list(range(end_year-4,end_year+1))  # however you're defining years
+    years = list(range(end_year-4,end_year+1))
     palette = px.colors.qualitative.Safe
 
     year_color = {

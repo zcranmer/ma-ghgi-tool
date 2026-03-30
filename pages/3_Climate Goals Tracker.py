@@ -86,6 +86,8 @@ with col3:
 # Load data either from the main app or from the data files
 start_year = 2017
 goal_year = 2024
+solar_year = goal_year-1
+vehicle_year = goal_year+1
 
 if 'df' not in st.session_state:
     from utils.load_data import load_data
@@ -142,19 +144,21 @@ ma_2024_hps = 125678 # HPs
 ma_2025_hps = 156245 # HPs as of 2025
 ma_2022_pvs = 4754000 # PVs All
 ma_2022_pvs_res = 1048691 # PVs Residential only
+ma_2023_pvs_res = 1085508
 ma_2022_pvs_res_count = 133901 # current count of residential solar projects in MA 
+ma_2023_pvs_res_count = 137587 # does not include projects with "unknown" type
 ma_pv_avg = ma_2022_pvs_res/ma_2022_pvs_res_count
     
 ma_numbers_cecp = [ma_2025_evs,
                   ma_2025_hps,
                   ma_2022_pvs_res,
-                  ma_2022_pvs_res_count 
+                  ma_2023_pvs_res_count 
                   ]
     
 growth_numbers_ma = [int(round(ma_2025_evs*0.9,-2)),
                       int(round(ma_2025_hps*0.5,-2)),
-                      int(round(ma_2022_pvs_res*0.1,0)),
-                      int(round(ma_2022_pvs_res*0.1/ma_pv_avg,0)) # growth in count of projects is based on 10% growth in kW capacity
+                      int(round(ma_2023_pvs_res*0.1,0)),
+                      int(round(ma_2023_pvs_res*0.1/ma_pv_avg,0)) # growth in count of projects is based on 10% growth in kW capacity
                       ]
 growth_numbers_ma = [127000,
                      62000,
@@ -167,10 +171,10 @@ growth_numbers_ma = [127000,
 #    add_df = pd.DataFrame(data=np.array([[locality,0,0]]),columns=goals_df.columns)
 #    goals_df = pd.concat([goals_df,add_df])
 
-locality_numbers = [goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==goal_year+2),'Count Res EVs 01'].round(0).astype('int').item(),
+locality_numbers = [goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==vehicle_year+1),'Count Res EVs 01'].round(0).astype('int').item(),
                     goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==goal_year),'Cumulative heat pumps all (accounts)'].astype('int').item(),
-                    solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Capacity (kW DC) Residential Cumulative'].round(0).astype('int').item(),
-                    solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Project Count Residential Cumulative'].round(0).astype('int').item(),
+                    solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==solar_year),'Cumulative Capacity (kW DC) Residential'].round(0).astype('int').item(),
+                    solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==solar_year),'Cumulative Project Count Residential'].round(0).astype('int').item(),
                     ]
 
 locality_nums = locality_numbers.copy()
@@ -183,8 +187,8 @@ growth_numbers = [int(round(locality_numbers[0]*0.9,0)),
                   ]
 
 locality_hh = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==goal_year),'Households'].item()
-locality_vehicles = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==goal_year+1),'Total Residential Vehicles 01'].item()
-locality_respv_avg = round(solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==2022),'Capacity (kW DC) Residential Cumulative'].item()/solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==goal_year),'Project Count Residential Cumulative'].item(),2)
+locality_vehicles = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==vehicle_year),'Total Residential Vehicles 01'].item()
+locality_respv_avg = round(solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==solar_year),'Cumulative Capacity (kW DC) Residential'].item()/solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==solar_year),'Cumulative Project Count Residential'].item(),2)
 
 growth = [f'{growth_numbers[0]:,}', # EV count
           f'{growth_numbers[1]:,}', # HP count
@@ -244,7 +248,7 @@ df = pd.DataFrame(data = {'Measure':['Electric Vehicles','Heat Pumps','Solar'],
                               #'%':['90%','50%','10%'],
                               #'2030 Goal':local_goal,
                               locality:[locality_nums[0],locality_nums[1],locality_nums[3]],
-                              'Most Recent Count Date':[goal_year+1,goal_year,'2022'],
+                              'Most Recent Count Date':[vehicle_year,goal_year,str(solar_year)],
                               locality+' yearly growth to meet goal':[growth[0],growth[1],growth[3]]
                               })
     
@@ -291,7 +295,7 @@ df[locality+' yearly growth to meet goal'] = df[locality+' yearly growth to meet
 st.markdown("""
             <div class="custom-bullets1">
             <ul>
-                <li>""" + f"In {locality} at the end of {goal_year+1}, there were {locality_numbers[0]:,} passenger electric vehicles (EVs). \
+                <li>""" + f"In {locality} at the end of {vehicle_year}, there were {locality_numbers[0]:,} passenger electric vehicles (EVs). \
                     Based on the statewide goal of 900,000 in 2030, {growth_numbers[0]:,} new EVs need to be adopted this year and \
                         every year thereafter until 2030. This represents <strong>90%</strong> of the total number of EVs currently registered.\
                         " + """</li>
@@ -405,15 +409,15 @@ st.markdown("<span style='font-size: 14px;'>For simplicity, the Climate Goals Tr
 st.markdown(f"""
             <div class="custom-bullets">
             <ul>
-                <li><p><strong>EVs</strong>: In Massachusetts at the end of {goal_year+1}, there were {ma_2025_evs:,} EVs. \
+                <li><p><strong>EVs</strong>: In Massachusetts at the end of {vehicle_year}, there were {ma_2025_evs:,} EVs. \
                     In order to meet the state goal, Massachusetts needs 900,000 EVs by 2030 (that represents \
                     about 18% of the 4.9 million passenger vehicles registered in Massachusetts). \
                     Assuming straight-line growth, 127,000 EVs need to be added annually from now to 2030. \
                     127,000 is about <strong>90%</strong> of the {ma_2025_evs:,} EVs currently registered in the state. \
                     We therefore assume that every community should also annually add a number of EVs equal to \
-                    90% of the EVs it had at the end of {goal_year+1}. </p>
+                    90% of the EVs it had at the end of {vehicle_year}. </p>
                     <p>For example, a community with 100 EVs at the end of \
-                    {goal_year+1} would need to add an additional 90 EVs this year and every year thereafter \
+                    {vehicle_year} would need to add an additional 90 EVs this year and every year thereafter \
                     for a total of 640 in 2030.</p></li>
                 <li><p><strong>Heat pumps</strong>: The 2030 goal is 500,000 heat pump installations or about 16% \
                     of all 2.8 million households need to adopt heat pumps by 2030. At the end of {goal_year+1}, \
@@ -421,13 +425,13 @@ st.markdown(f"""
                     62,000 more heat pump installations this year and each year after that. 62,000 is \
                     <strong>50%</strong> of the {ma_2025_hps:,} heat pumps that are currently installed in the state. \
                     We therefore assume that every community should also annually add the number of heat pump \
-                    installations equal to 50% of heat pumps it had at the end of {goal_year+1}. </p>
+                    installations equal to 50% of heat pumps it had at the end of {goal_year}. </p>
                     <p>For example, a community with 100 heat pumps installed by the end of {goal_year} would need to add 50 additional heat pumps \
                     this year and every year thereafter for a total of 400 in 2030.</p></li>
                 <li><p><strong>Solar PVs</strong>: The 2030 goal is 8,360 megawatts (MW) of total solar generation \
                     in Massachusetts. Based on recent years of solar data, residential solar has made up about 25% \
                     of total solar installed in Massachusetts. That amounts to 2,090 MW of residential solar in 2030. \
-                    At the end of 2022 (the latest year of complete data available), residential solar installed \
+                    At the end of {solar_year} (the latest year of complete data available), residential solar installed \
                     capacity was 1,049 MW. Meeting the 2030 goals will require adding 107 MW of solar in 2025 and \
                     each year after that. That translates to approximately 13,400 new projects each year, assuming \
                     that the average size of current residential projects of 8 kilowatts (kW). Putting it in perspective, \
