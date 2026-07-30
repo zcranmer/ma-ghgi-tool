@@ -99,7 +99,7 @@ else:
 # no longer needs to be added here, built into the whole dataset
 #goals_df.loc[goals_df['Municipality']=='Concord','Installed heat pumps (accounts)'] = 839 # from Concord MLP https://storymaps.arcgis.com/stories/a665b137c40b4174841c52bb474962ec
 
-goals_df['Cumulative heat pumps all (accounts)'] = goals_df['Cumulative heat pumps all (accounts)'].astype('str').replace({'*': 0})
+goals_df['Cumulative heat pumps all (accounts)'] = goals_df['Cumulative heat pumps all (accounts)'].astype('str').replace({'*': 0}).fillna(0)
 
 st.title(f'Climate Goals Tracker')
 st.markdown("<span style='font-size: 18px;'>Climate Goals Tracker provides information to \
