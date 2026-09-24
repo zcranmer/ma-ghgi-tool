@@ -202,11 +202,15 @@ if st.session_state.active_view == 'Overview':
     default_year = 2024
     base_year = 2020
     
-    n_hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year+1),'Cumulative installed heat pumps Total'].item()
-    n_accounts = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year),'Active accounts Total'].item()
+    n_hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year+1),'Cumulative installed heat pumps Total'].astype('float').item()
+    n_accounts = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year),'Active accounts Total'].astype('float').item()
+    if municipality == 'Massachusetts':
+        n_hps = dataset.loc[(dataset['Year']==default_year),'Cumulative installed heat pumps Total'].astype('float').sum().item()
+        n_accounts = dataset.loc[(dataset['Year']==default_year),'Active accounts Total'].astype('float').sum().item()
     hh_w_hps = 100*n_hps/n_accounts
-    top1_hp_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','HH with HPs']].nlargest(4,columns='HH with HPs')
-    top10_hp_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','HH with HPs']].nlargest(35,columns='HH with HPs')
+    #top_hps = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs']]
+    top1_hp_adopters = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs']].nlargest(4,columns='HH with HPs')
+    top10_hp_adopters = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs']].nlargest(35,columns='HH with HPs')
     
     hh_w_pvs = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year),'HH with PVs'].item()
     top1_pv_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','HH with PVs']].nlargest(4,columns='HH with PVs')
