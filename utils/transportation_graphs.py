@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # function for transportation
-@st.cache_data
+#@st.cache_data
 def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
     subset = dataset.loc[(dataset['Municipality']==m)&(dataset['Year']>2019),:]
     
@@ -174,6 +174,18 @@ def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
                    ),
                    row=2,col=2)
     
+    fig.update_traces(mode='markers+lines',
+                      )
+    for data in fig.data:
+        if data.yaxis == "y":  # First subplot (y-axis defaults to 'y')
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f}"
+        elif data.yaxis == "y2":  # Second subplot
+            data.hovertemplate = "Year: %{x}<br>%{y2:,.0f} miles"
+        elif data.yaxis == "y3":  # Third subplot
+            data.hovertemplate = "Year: %{x}<br>%{y3:,.0f} MMBTU"
+        elif data.yaxis == "y4":  # Fourth subplot
+            data.hovertemplate = "Year: %{x}<br>%{y4:,.0f} MTCO2e"
+    
     fig.update_layout(hovermode='x',
                       title=dict(text='Share of vehicles and miles driven in '+m,font=dict(size=24)),
                       yaxis=dict(title=dict(text='Vehicles',font=dict(size=18,color='black'),standoff=10),
@@ -204,7 +216,7 @@ def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
     st.plotly_chart(fig)
     
 
-@st.cache_data
+#@st.cache_data
 def trans_graph(m,y5,dataset):
     subset = dataset[(dataset['Municipality']==m)&(dataset['Year']>2019)]
     year_set5 = dataset[(dataset['Year']==y5)&(dataset['Municipality']==m)]

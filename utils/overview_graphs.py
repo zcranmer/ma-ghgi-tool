@@ -17,7 +17,7 @@ def get_brightness(color_name):
     return 0.299 * rgb[0]*255 + 0.587 * rgb[1]*255 + 0.114 * rgb[2]*255
 
 # function for annual emissions graph(s)
-@st.cache_data
+#@st.cache_data
 def m_graph1(m,dataset,start_year,end_year):
     subset = dataset[(dataset['Municipality']==m)&(dataset['Year']>2019)&(dataset['Year']<=end_year)]
     
@@ -33,7 +33,8 @@ def m_graph1(m,dataset,start_year,end_year):
         go.Scatter(x=subset.Year,y=subset['Total Residential (MTCO2e)'].round(0),name='Residential'),
         row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Total Commercial & Industrial (MTCO2e)'].round(0),name='C&I'),
+        go.Scatter(x=subset.Year,y=subset['Total Commercial & Industrial (MTCO2e)'].round(0),name='C&I',
+                   hoverinfo='x+y+name',mode='lines'),
         row=1,col=1)
     fig.add_trace(
         go.Scatter(x=subset.Year,y=subset['Per Capita (MTCO2e)'].round(2),name='Per Capita'),
@@ -56,8 +57,15 @@ def m_graph1(m,dataset,start_year,end_year):
     fig.update_xaxes(title=dict(text='Year',font=dict(size=14,color='black')),
                      tickvals=list(range(start_year,end_year+1)),
                      tickfont=dict(size=14,color='black'))
-    fig.update_traces(mode='markers+lines',hovertemplate=None)
-    fig.update_layout(hovermode='x',showlegend=True,
+    fig.update_traces(mode='markers+lines',#hovertemplate=None,
+                      hovertemplate="Year: %{x}<br>%{y:,.0f} MTCO2e")
+    for data in fig.data:
+        if data.yaxis == "y":  # First subplot (y-axis defaults to 'y')
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} MTCO2e"
+        elif data.yaxis == "y2":  # Second subplot
+            data.hovertemplate = "Year: %{x}<br>%{y:.1f} MTCO2e"
+    fig.update_layout(hovermode='x',
+                      showlegend=True,
                       height=400,width=1000,
                       annotations=[dict(font=dict(color='black'))]
                       )
@@ -66,7 +74,7 @@ def m_graph1(m,dataset,start_year,end_year):
     return subset
 
 # function for one year pie charts
-@st.cache_data
+#@st.cache_data
 def my_graph1(m,y,dataset,colors_fuel):
     year_set = dataset[(dataset['Year']==y)&(dataset['Municipality']==m)]
     
@@ -92,16 +100,18 @@ def my_graph1(m,y,dataset,colors_fuel):
                                )
     year_sub1 = year_sub1.reset_index()
     
-    graph_cols2 = ['Total Residential Buildings (MTCO2e)',
-                   'Total Commercial & Industrial Buildings (MTCO2e)',
+    graph_cols2 = ['Total Residential Buildings Fuels (MTCO2e)',
+                   'Total Commercial & Industrial Buildings Fuels (MTCO2e)',
+                   'Total Electricity (MTCO2e)',
                    'Total Transportation (MTCO2e)',
                    #'Public Transit Total (MTCO2e)',
                    'Total Waste (MTCO2e)'
                    ]
     year_sub2 = year_set[graph_cols2].T
     year_sub2 = year_sub2.rename(columns={year_sub2.columns[0]:'Emissions'},
-                               index={'Total Residential Buildings (MTCO2e)':'Residential',
-                                      'Total Commercial & Industrial Buildings (MTCO2e)':'Commercial & Industrial',
+                               index={'Total Residential Buildings Fuels (MTCO2e)':'Residential',
+                                      'Total Commercial & Industrial Buildings Fuels (MTCO2e)':'Commercial & Industrial',
+                                      'Total Electricity (MTCO2e)':'Electricity',
                                       'Total Transportation (MTCO2e)':'Transportation',
                                       #'Public Transit Total (MTCO2e)':'Public Transit',
                                       'Total Waste (MTCO2e)':'Waste'
@@ -124,18 +134,26 @@ def my_graph1(m,y,dataset,colors_fuel):
                                )
     year_sub3 = year_sub3.reset_index()
     
-    graph_cols4 = ['Total Residential Buildings (MMBTU)',
-                   'Total Commercial & Industrial Buildings (MMBTU)',
+    graph_cols4 = ['Total Residential Buildings Fuels (MMBTU)',
+                   'Total Commercial & Industrial Buildings Fuels (MMBTU)',
+                   'Total Electricity (MMBTU)',
                    'Total Transportation (MMBTU)']
     year_sub4 = year_set[graph_cols4].T
     year_sub4 = year_sub4.rename(columns={year_sub4.columns[0]:'Energy'},
-                               index={'Total Residential Buildings (MMBTU)':'Residential',
-                                      'Total Commercial & Industrial Buildings (MMBTU)':'Commercial & Industrial',
+                               index={'Total Residential Buildings Fuels (MMBTU)':'Residential',
+                                      'Total Commercial & Industrial Buildings Fuels (MMBTU)':'Commercial & Industrial',
+                                      'Total Electricity (MMBTU)': 'Electricity',
                                       'Total Transportation (MMBTU)':'Transportation'
                                       }
                                )
     year_sub4 = year_sub4.reset_index()
     #print(year_sub4)
+    
+    colors_sector = {'Residential':'darkblue',
+                   'Commercial & Industrial':'lightblue',
+                   'Electricity':'darkgreen',
+                   'Transportation':'salmon',
+                   'Waste':'tab:brown'}
 
     # making the pie charts
     fig = make_subplots(rows=2,cols=2,specs=[[{'type':'domain'}, {'type':'domain'}], 
@@ -158,7 +176,7 @@ def my_graph1(m,y,dataset,colors_fuel):
         row=1,col=1)
     fig.add_trace(
         go.Pie(labels=year_sub2['index'], values=year_sub2['Emissions'].round(0),
-               sort=False,rotation=-90,
+               sort=False,rotation=-90,marker_colors=year_sub2['index'].map(colors_sector),
                textinfo='label+percent',textfont_size=14,
                textfont=dict(color='black'),
                insidetextfont=dict(color=['white','black','white','black']),
@@ -167,7 +185,7 @@ def my_graph1(m,y,dataset,colors_fuel):
         row=1,col=2)
     fig.add_trace(
         go.Pie(labels=year_sub3['index'],values=year_sub3['Energy'].round(0),
-               sort=False,rotation=90,
+               sort=False,rotation=90,marker_colors=year_sub3['index'].map(colors_fuel),
                textinfo='label+percent',textfont_size=14,
                textfont=dict(color='black'),
                insidetextfont=dict(color=['white','white','black','black','white','black']),
@@ -176,7 +194,7 @@ def my_graph1(m,y,dataset,colors_fuel):
         row=2,col=1)
     fig.add_trace(
         go.Pie(labels=year_sub4['index'],values=year_sub4['Energy'].round(0),
-               sort=False,rotation=-70,
+               sort=False,rotation=-70,marker_colors=year_sub4['index'].map(colors_sector),
                textinfo='label+percent',textfont_size=14,
                textfont=dict(color='black'),
                insidetextfont=dict(color=['white','black','white']),

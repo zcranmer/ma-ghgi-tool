@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # function for waste
-@st.cache_data
+#@st.cache_data
 def waste_graph(m,landfill,mwra,septic,dataset,colors_waste):
     subset = dataset[(dataset['Municipality']==m)&(dataset['Year']<2024)]
     
@@ -70,7 +70,7 @@ def waste_graph(m,landfill,mwra,septic,dataset,colors_waste):
                       height=500,width=800)
     st.plotly_chart(fig)
     
-@st.cache_data
+#@st.cache_data
 def waste_graph1(m,y,landfill,mwra,septic,dataset,colors_waste):
     subset = dataset[(dataset['Municipality']==m)&(dataset['Year']<2024)]
     year_set = dataset[(dataset['Year']==y)&(dataset['Municipality']==m)]    

@@ -16,7 +16,7 @@ import copy
 
 
 # function for statewide maps for a single year
-@st.cache_data
+#@st.cache_data
 def compare_table(dataset,main_muni,peer_munis):
     data_cols = ['Municipality','Year',
                  'Total (MTCO2e)','HH with HPs','HH with PVs','Percent EVs',

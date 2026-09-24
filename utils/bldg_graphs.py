@@ -36,7 +36,7 @@ def add_missing_panel_message(fig, row, col, message):
     )
 
 # function for buildings
-@st.cache_data
+#@st.cache_data
 def ms_hp_graph(m,dataset,start_year,end_year):
     cols = ['Year',
             'Average annual location participation rate [%]',
@@ -91,11 +91,88 @@ def ms_hp_graph(m,dataset,start_year,end_year):
                    name='Cumulative HVAC'),
                    row=1,col=2)
     
-    fig.update_traces(mode='markers+lines',hovertemplate=None)
+    fig.update_traces(mode='markers+lines',hovertemplate=None,
+                      )
     fig.update_layout(hovermode='x',
                       title=dict(text=f'Mass Save participation and heat pump adoption in {m}',
                                 font=dict(size=24)),
                       yaxis=dict(title=dict(text='Locations',font=dict(size=14,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black')),
+                      yaxis2=dict(title=dict(text='Accounts',font=dict(size=14,color='black'),standoff=0),
+                                  tickfont=dict(size=14,color='black')),
+                      height=400,width=1000,
+                      annotations=[dict(font=dict(color='black'))]
+                      )
+    fig.update_xaxes(title=dict(text='Year',font=dict(size=14,color='black')),
+                     tickfont=dict(size=14,color='black'))
+        
+    st.plotly_chart(fig)
+    
+def ms_hp_new_graph(m,dataset):
+    cols = ['Year',
+            'Active accounts Total',
+            'Participants Total',
+            'Weatherized accounts Total',
+            'Installed heat pumps Total', 
+            'Cumulative installed heat pumps Total', 
+            'MLP installed heat pumps Total',
+            'Cumulative MLP installed heat pumps Total']
+    
+    subset = dataset.loc[(dataset['Municipality']==m),cols].copy()
+    
+    fig = make_subplots(rows=1,cols=2,
+                        subplot_titles=('Mass Save Program Participation',
+                                        'Heat Pump Adoption'),
+                        )
+    
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Active accounts Total'],
+                   hoverinfo='x+y+name',mode='lines',
+                   showlegend=True,legendgroup = '1',
+                   name='Accounts'),
+                   row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Participants Total'],
+                   hoverinfo='x+y+name',mode='lines',
+                   showlegend=True,legendgroup = '1',
+                   name='Participants'),
+                   row=1,col=1)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Weatherized accounts Total'],
+                   hoverinfo='x+y+name',mode='lines',
+                   showlegend=True,legendgroup = '1',
+                   name='Weatherization'),
+                   row=1,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Installed heat pumps Total'],
+                   hoverinfo='x+y+name',mode='lines',
+                   showlegend=True,legendgroup = '1',
+                   name='New heat pumps (Mass Save)'),
+                   row=1,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Cumulative installed heat pumps Total'],
+                   hoverinfo='x+y+name',mode='lines',
+                   showlegend=True,legendgroup = '1',
+                   name='Cumulative heat pumps (Mass Save)'),
+                   row=1,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['MLP installed heat pumps Total'],
+                   hoverinfo='x+y+name',mode='lines',
+                   showlegend=True,legendgroup = '1',
+                   name='New heat pumps (MLP)'),
+                   row=1,col=2)
+    fig.add_trace(
+        go.Scatter(x=subset.Year,y=subset['Cumulative MLP installed heat pumps Total'],
+                   hoverinfo='x+y+name',mode='lines',
+                   showlegend=True,legendgroup = '1',
+                   name='Cumulative heat pumps (MLP)'),
+                   row=1,col=2)
+    
+    fig.update_traces(mode='markers+lines',hovertemplate=None)
+    fig.update_layout(hovermode='x',
+                      title=dict(text=f'Mass Save participation and heat pump adoption in {m}',
+                                font=dict(size=24)),
+                      yaxis=dict(title=dict(text='Accounts',font=dict(size=14,color='black'),standoff=10),
                                  tickfont=dict(size=14,color='black')),
                       yaxis2=dict(title=dict(text='Accounts',font=dict(size=14,color='black'),standoff=0),
                                   tickfont=dict(size=14,color='black')),
@@ -257,6 +334,13 @@ def bldg_graph0(m,dataset,start_year,end_year):
                       height=400,width=1000,
                       annotations=[dict(font=dict(color='black'))]
                       )
+    fig.update_traces(mode='markers+lines',
+                      hovertemplate="Year: %{x}<br>%{y:,.0f} MWh")
+    for data in fig.data:
+        if data.yaxis == "y":  # First subplot (y-axis defaults to 'y')
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} MWh"
+        elif data.yaxis == "y2":  # Second subplot
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} therms"
     fig.update_xaxes(title=dict(text='Month',font=dict(size=14,color='black')),
                      tickfont=dict(size=14,color='black'))
     
@@ -265,6 +349,7 @@ def bldg_graph0(m,dataset,start_year,end_year):
 
 def bldg_graph1(m,dataset,colors_fuel,start_year,end_year):
     subset = dataset[(dataset['Municipality']==m)&(dataset['Year']<end_year+1)].copy()
+    subset_e = dataset[(dataset['Municipality']==m)&(dataset['Year']<end_year+1)&(dataset['Year']>2016)].copy()
     
     # stacked area charts - energy and emissions
     fig = make_subplots(rows=2,cols=2,
@@ -324,21 +409,36 @@ def bldg_graph1(m,dataset,colors_fuel,start_year,end_year):
             if col_name not in subset.columns:
                 # If a column is missing, skip it (robust against schema changes)
                 continue
-
-            fig.add_trace(
-                go.Scatter(
-                    x=subset["Year"],
-                    y=pd.to_numeric(subset[col_name], errors="coerce"),
-                    hoverinfo="x+y+name",
-                    mode="lines",
-                    stackgroup=stackgroup,
-                    name=fuel_name,
-                    line=dict(color=colors_fuel.get(fuel_name, "#666")),  # fallback color
-                    legendgroup="1",
-                    showlegend=showlegend,
-                ),
-                row=row, col=col
-            )
+            elif stackgroup in ['three','four']:
+                fig.add_trace(
+                    go.Scatter(
+                        x=subset_e["Year"],
+                        y=pd.to_numeric(subset_e[col_name], errors="coerce"),
+                        hoverinfo="x+y+name",
+                        mode="lines",
+                        stackgroup=stackgroup,
+                        name=fuel_name,
+                        line=dict(color=colors_fuel.get(fuel_name, "#666")),  # fallback color
+                        legendgroup="1",
+                        showlegend=showlegend,
+                        ),
+                    row=row, col=col
+                    )
+            else:
+                fig.add_trace(
+                    go.Scatter(
+                        x=subset["Year"],
+                        y=pd.to_numeric(subset[col_name], errors="coerce"),
+                        hoverinfo="x+y+name",
+                        mode="lines",
+                        stackgroup=stackgroup,
+                        name=fuel_name,
+                        line=dict(color=colors_fuel.get(fuel_name, "#666")),  # fallback color
+                        legendgroup="1",
+                        showlegend=showlegend,
+                        ),
+                    row=row, col=col
+                    )
 
     # --- Add all panels via loop ---
     for (r, c), spec in panels.items():
@@ -349,7 +449,13 @@ def bldg_graph1(m,dataset,colors_fuel,start_year,end_year):
             showlegend=spec["showlegend"],
         )
 
-    fig.update_traces(mode='markers+lines',hovertemplate=None)
+    fig.update_traces(mode='markers+lines',
+                      hovertemplate="Year: %{x}<br>%{y:,.0f} MTCO2e")
+    for data in fig.data:
+        if data.yaxis == "y":  # First subplot (y-axis defaults to 'y')
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} MMBTU"
+        elif data.yaxis == "y2":  # Second subplot
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} MMBTU"
     fig.update_layout(hovermode='x',
                       title=dict(text=f'Building energy and emissions in {m}',font=dict(size=24)),
                       yaxis=dict(title=dict(text='MMBTU',font=dict(size=14,color='black'),standoff=10),

@@ -16,7 +16,7 @@ color_sector = {'All':'#0068c9',
                 'Commercial':'#ff2b2b'}
 
 # function for solar graphs
-@st.cache_data
+#@st.cache_data
 def solar_graph(m,solar):
     solar = solar.rename(columns={'City':'Municipality'})
     subset = solar[solar['Municipality']==m]

@@ -7,7 +7,7 @@ Created on Mon Aug 11 09:26:11 2025
 
 import streamlit as st
 import pandas as pd
-#import numpy as np
+import numpy as np
 #import json
 #import plotly.express as px
 #import plotly.graph_objects as go
@@ -56,7 +56,7 @@ def track_slider(widget_key: str, widget_name: str, page: str):
     )
 
 
-start_year = 2017
+start_year = 2013
 end_year = 2024
 
 st.set_page_config(layout='wide',
@@ -136,9 +136,36 @@ municipality = st.selectbox('**To make a selection, click in the box and type th
 
 st.markdown('Choose from the different tabs below to look at different \n \
              elements of the data.')
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Overview','Demographics',
-                                        'Buildings','Solar','Transportation','Waste',
-                                        'Compare','Targets'])
+             
+if 'active_view' not in st.session_state:
+    st.session_state.active_view = 'Overview'
+
+col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+with col1:
+    if st.button('Overview', use_container_width=True):
+        st.session_state.active_view = 'Overview'
+with col2:
+    if st.button('Demographics', use_container_width=True):
+        st.session_state.active_view = 'Demographics'
+with col3:
+    if st.button('Buildings', use_container_width=True):
+        st.session_state.active_view = 'Buildings'
+with col4:
+    if st.button('Solar', use_container_width=True):
+        st.session_state.active_view = 'Solar'
+with col5:
+    if st.button('Transportation', use_container_width=True):
+        st.session_state.active_view = 'Transportation'
+with col6:
+    if st.button('Waste', use_container_width=True):
+        st.session_state.active_view = 'Waste'
+with col7:
+    if st.button('Compare', use_container_width=True):
+        st.session_state.active_view = 'Compare'
+
+#tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Overview','Demographics',
+#                                        'Buildings','Solar','Transportation','Waste',
+#                                        'Compare','Targets'])
 
 st.markdown("""
 <style>
@@ -157,7 +184,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ############ OVERVIEW TAB ####################################################
-with tab1:
+#with tab1:
+if st.session_state.active_view == 'Overview':
     st.header('Overview of Energy and Emissions')
     st.markdown("Below are some key metrics on the community's adoption of key technologies to reduce energy consumption and emissions. \
                 The percent of households with heat pumps is calculated from the number of accounts with a heat pump from the Mass Save \
@@ -174,7 +202,9 @@ with tab1:
     default_year = 2024
     base_year = 2020
     
-    hh_w_hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year),'HH with HPs'].item()
+    n_hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year+1),'Cumulative installed heat pumps Total'].item()
+    n_accounts = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year),'Active accounts Total'].item()
+    hh_w_hps = 100*n_hps/n_accounts
     top1_hp_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','HH with HPs']].nlargest(4,columns='HH with HPs')
     top10_hp_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','HH with HPs']].nlargest(35,columns='HH with HPs')
     
@@ -182,7 +212,7 @@ with tab1:
     top1_pv_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','HH with PVs']].nlargest(4,columns='HH with PVs')
     top10_pv_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','HH with PVs']].nlargest(35,columns='HH with PVs')
     
-    pct_evs = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year+1),'Percent Res EVs'].item()
+    pct_evs = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year+2),'Percent Res EVs'].item()
     top1_ev_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','Percent EVs']].nlargest(4,columns='Percent EVs')
     top10_ev_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','Percent EVs']].nlargest(35,columns='Percent EVs')
     
@@ -194,7 +224,7 @@ with tab1:
     
     col1,col2,col3,col4 = st.columns([1,3,3,1])
     with col2:
-        st.metric(label=f'{default_year} % Households with at least one heat pump for any end use.',
+        st.metric(label=f'{default_year+1} % Households with at least one heat pump for any end use.',
                   value=f'{hh_w_hps:,.2f}',
                   )
         if municipality in top1_hp_adopters['Municipality'].to_numpy():
@@ -229,7 +259,7 @@ with tab1:
                   #delta_color='normal'
                   )
     with col3:
-        st.metric(label=f'{default_year} % Passenger vehicles that are electric vehicles (BEVs and PHEVs).',
+        st.metric(label=f'{default_year+1} % Passenger vehicles that are electric vehicles (BEVs and PHEVs).',
                   value=f'{pct_evs:,.2f}',
                   )
         if municipality in top1_ev_adopters['Municipality'].to_numpy():
@@ -286,7 +316,8 @@ with tab1:
 
 
 ############## DEMOGRAPHICS TAB #############################################
-with tab2:
+#with tab2:
+elif st.session_state.active_view == 'Demographics':
     st.header('Demographics')
     from utils.demographics import m_demog_graph
     st.markdown("Demographic data is from the U.S. Census Bureau's American Community Survey (ACS)\
@@ -300,9 +331,10 @@ with tab2:
 
 
 ########## BUILDINGS TAB ####################################################
-with tab3:
+#with tab3:
+elif st.session_state.active_view == 'Buildings':
     st.header('Building Energy and Emissions')
-    from utils.bldg_graphs import ms_hp_graph, bldg_graph0, bldg_graph1, bldg_graph2
+    from utils.bldg_graphs import ms_hp_graph, ms_hp_new_graph, bldg_graph0, bldg_graph1, bldg_graph2
     st.markdown("Below are some key metrics related to energy use in buildings.\
                 The Mass Save particition rate is a cumulative measure of participation since 2013. \
                     More detail about Mass Save participation is provided in a graph below.\
@@ -320,11 +352,12 @@ with tab3:
         st.markdown('Note: Some data may be missing from Mass Save Data due to a small number of customers.')
         
     # calc # of heat pumps or other metrics to show
-    hps = pd.to_numeric(dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year),'Cumulative heat pumps all (accounts)'],errors='coerce')
+    end_year_bldgs = 2025
+    hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year_bldgs),'Cumulative installed heat pumps Total']
     if hps.isna().item():
         hps = 'unknown'
     else: hps = hps.astype('int').item()
-    households = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year),'Total Heating Fuel Households'].astype('int').item()
+    households = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year),'Households'].astype('int').item()
     ms_participation = (100*pd.to_numeric(dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year),'Cumulative location participation rate [%] (4)'],errors='coerce'))
     if ms_participation.isna().item():
         ms_participation = 'unknown'
@@ -355,8 +388,7 @@ with tab3:
         st.metric(label = 'Community aggregation?',
                   value = cea)
     
-    st.markdown('*Note: In many communities, heat pump data is not available particularly those served by a Municipal Light Plant (MLP)\
-                and communities that do not meet the 100 account reporting threshold for Mass Save.', unsafe_allow_html=True)
+    st.markdown('*Note: Heat pump data is not available for most communities served by a Municipal Light Plant (MLP).', unsafe_allow_html=True)
                 
     st.markdown('Building emissions do not factor in renewable energy purchased through community aggregation programs. \
                 This will be available in a future version.', unsafe_allow_html=True)
@@ -367,7 +399,7 @@ with tab3:
                 The third shows monthly utility data from Mass Save. \
                 The last set of graphs shows shares of fuel use.', unsafe_allow_html=True)
     
-    subset3 = bldg_graph1(municipality,dataset,colors_fuel,start_year,end_year)
+    subset3 = bldg_graph1(municipality,dataset,colors_fuel,start_year,end_year_bldgs)
     with st.expander('Data notes for building energy and emissions:',
                      expanded=True):
         st.markdown("""
@@ -380,15 +412,15 @@ with tab3:
                     - Utility-specific emissions factors are estimated based on Mass DEP's GHG Reporting Program data.
                     """)
     
-    ms_hp_graph(municipality,dataset,start_year,end_year)
+    #ms_hp_graph(municipality,dataset,start_year,end_year_bldgs)
+    ms_hp_new_graph(municipality,dataset)
+    
     with st.expander('Data notes for Mass Save participation and heat pumps:',
                      expanded=True):
         st.markdown(""" 
                     - Cumulative Mass Save participation counts each household or location only once even if they participated multiple times.
-                    - Annual and cumulative heat pump adoption is provided for all types of heat pumps and for HVAC heat pumps.
-                    - Households or accounts can have more than one type of heat pump, so the total number of accounts with heat pumps minus the number of HVAC heat pumps does not equal the number of hot water heat pumps.
-                    - The Mass Save program does not publish data if the number of accounts is less than 100. * indicates suppressed data.
-                    - Mass Save data for 2024 published in December of 2025.
+                    - Annual and cumulative heat pump adoption is provided for all building types.
+                    - Mass Save data for 2025 published in 2026.
                     """)
     
     bldg_graph0(municipality,dataset,start_year,end_year)
@@ -421,7 +453,8 @@ with tab3:
 
 
 ############### SOLAR TAB ##################################################
-with tab4:
+#with tab4:
+elif st.session_state.active_view == 'Solar':
     st.header('Solar Energy Adoption')
     from utils.solar_graphs import solar_graph
     st.text(' ')
@@ -460,7 +493,8 @@ with tab4:
 
 
 ############# TRANSPORTATION TAB ############################################
-with tab5:
+#with tab5:
+elif st.session_state.active_view == 'Transportation':
     st.header('Transportation Energy and Emissions')
     from utils.transportation_graphs import trans_graph0, trans_graph
     st.markdown("Below are some key metrics related to transportation emissions. \
@@ -485,6 +519,8 @@ with tab5:
     pct_ghyb = 100*ghyb/evs_subset.loc[:,'Count Total Vehicles 01'].item()
     pubtrans = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year),'pct public transit'].item()
     charge_stations = evs_subset.loc[:,'Total Level All Station Count'].item()
+    if np.isnan(charge_stations):
+        charge_stations = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year+1),'Total Level All Station Count'].item()
     
     col1,col2,col3,col4 = st.columns([1,3,3,1])
     with col2:
@@ -527,7 +563,8 @@ with tab5:
 
 
 ################ WASTE TAB ##################################################
-with tab6:
+#with tab6:
+elif st.session_state.active_view == 'Waste':
     st.header('Waste Emissions')
     from utils.waste_graphs import waste_graph, waste_graph1
     
@@ -605,7 +642,8 @@ with tab6:
 
 
 ########## COMPARISON TAB ###################################################
-with tab7:
+#with tab7:
+elif st.session_state.active_view == 'Compare':
     st.header('Comparison Tool')
     from utils.compare import compare_table, map_figure, scatter_explore
     st.text(' ')
@@ -691,19 +729,19 @@ with tab7:
 
 #streamlit_analytics.stop_tracking()
 
-with tab8:
-    st.header('State Targets')
-    st.subheader('MA has established statewide emissions targets by sector.')
-    st.markdown('Percent reduction in CO2e relative to 1990.')
-    
-    target_table = pd.DataFrame({'2025':['29%','24%','18%','53%'],
-                                 '2030':['49%','44%','34%','70%'],
-                                 '2050':['95%','92%','86%','93%']},
-                                index=['Residential Heating and Cooling',
-                                       'Commercial Heating and Cooling',
-                                       'Transportation',
-                                       'Electric Power'])
-    st.table(data=target_table)
+#with tab8:
+#    st.header('State Targets')
+#    st.subheader('MA has established statewide emissions targets by sector.')
+#    st.markdown('Percent reduction in CO2e relative to 1990.')
+#    
+#    target_table = pd.DataFrame({'2025':['29%','24%','18%','53%'],
+#                                 '2030':['49%','44%','34%','70%'],
+#                                 '2050':['95%','92%','86%','93%']},
+#                                index=['Residential Heating and Cooling',
+#                                       'Commercial Heating and Cooling',
+#                                       'Transportation',
+#                                       'Electric Power'])
+#    st.table(data=target_table)
     
 
 

@@ -87,6 +87,7 @@ with col3:
 start_year = 2017
 goal_year = 2024
 solar_year = goal_year-1
+hp_year = goal_year+1
 vehicle_year = goal_year+1
 
 if 'df' not in st.session_state:
@@ -99,7 +100,8 @@ else:
 # no longer needs to be added here, built into the whole dataset
 #goals_df.loc[goals_df['Municipality']=='Concord','Installed heat pumps (accounts)'] = 839 # from Concord MLP https://storymaps.arcgis.com/stories/a665b137c40b4174841c52bb474962ec
 
-goals_df['Cumulative heat pumps all (accounts)'] = goals_df['Cumulative heat pumps all (accounts)'].astype('str').replace({'*': 0}).fillna(0)
+goals_df['Cumulative installed heat pumps Total'] = goals_df['Cumulative installed heat pumps Total'].astype('str').replace({'*': 0}).fillna(0)
+goals_df['Cumulative MLP installed heat pumps Total'] = goals_df['Cumulative MLP installed heat pumps Total'].fillna(0)
 
 st.title(f'Climate Goals Tracker')
 st.markdown("<span style='font-size: 18px;'>Climate Goals Tracker provides information to \
@@ -171,15 +173,27 @@ growth_numbers_ma = [147000,   # (900,000-166,296)/5
 #    add_df = pd.DataFrame(data=np.array([[locality,0,0]]),columns=goals_df.columns)
 #    goals_df = pd.concat([goals_df,add_df])
 
+hps_iou = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==hp_year),'Cumulative installed heat pumps Total'].astype('float').astype('int').item()
+hps_mlp = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==hp_year),'Cumulative MLP installed heat pumps Total'].astype('float').astype('int').item()
+
+if locality == 'Stow':
+    hps_mlp = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==hp_year-1),'Cumulative MLP installed heat pumps Total'].astype('float').astype('int').item()
+
+hps_all = hps_iou+hps_mlp
+
+# I don't have 2025 data for Concord or Stow, so using 2024 data
+if locality == 'Concord':
+    hps_all = goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==hp_year-1),'Cumulative MLP installed heat pumps Total'].astype('float').astype('int').item()
+
 locality_numbers = [goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==vehicle_year+1),'Count Res EVs 01'].round(0).astype('int').item(),
-                    goals_df.loc[(goals_df['Municipality']==locality)&(goals_df['Year']==goal_year),'Cumulative heat pumps all (accounts)'].astype('int').item(),
+                    hps_all,
                     solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==solar_year),'Cumulative Capacity (kW DC) Residential'].round(0).astype('int').item(),
                     solar_df.loc[(solar_df['City']==locality)&(solar_df['Year']==solar_year),'Cumulative Project Count Residential'].round(0).astype('int').item(),
                     ]
 
 locality_nums = locality_numbers.copy()
-if locality_numbers[1] == 0:
-    locality_nums[1] = '<100'
+#if locality_numbers[1] == 0:
+#    locality_nums[1] = '<100'
     
 growth_numbers = [int(round(locality_numbers[0]*0.9,0)),
                   int(round(locality_numbers[1]*0.5,0)),
@@ -228,8 +242,8 @@ local_goal = [f'{total_2030_evs:,}',
               ]
 
 if locality_numbers[1] == 0:
-    local_hp_num = 'somewhere between 1-99'
-    hp_masssave_statement = '(Mass Save does not provide exact info if the quantity is below 100), so we are conservatively presuming 20.'
+#    local_hp_num = 'somewhere between 1-99'
+#    hp_masssave_statement = '(Mass Save does not provide exact info if the quantity is below 100), so we are conservatively presuming 20.'
     growth_numbers[1] = 10
     growth[1] = 10
     total_2030_hps = 20+growth_numbers[1]*6
@@ -248,7 +262,7 @@ df = pd.DataFrame(data = {'Measure':['Electric Vehicles','Heat Pumps','Solar'],
                               #'%':['90%','50%','10%'],
                               #'2030 Goal':local_goal,
                               locality:[locality_nums[0],locality_nums[1],locality_nums[3]],
-                              'Most Recent Count Date':[vehicle_year,goal_year,str(solar_year)],
+                              'Most Recent Count Date':[vehicle_year,hp_year,str(solar_year)],
                               locality+' yearly growth to meet goal':[growth[0],growth[1],growth[3]]
                               })
     
@@ -299,8 +313,7 @@ st.markdown("""
                     Based on the statewide goal of 900,000 in 2030, {growth_numbers[0]:,} new EVs need to be adopted this year and \
                         every year thereafter until 2030. This represents <strong>90%</strong> of the total number of EVs currently registered.\
                         " + """</li>
-                <li>""" + f"In {locality} at the end of {goal_year}, there were {local_hp_num} heat pumps installed. \
-                    {hp_masssave_statement}\
+                <li>""" + f"In {locality} at the end of {hp_year}, there were {locality_numbers[1]:,} heat pumps installed. \
                     Based on the state goal of 500,000 in 2030, {growth_numbers[1]:,} new installations are needed this year \
                     and every year thereafter until 2030. This represents <strong>50%</strong> of the total number of heat pump installations currently. \
                     " + """</li>
@@ -378,9 +391,7 @@ st.markdown("""
             <div class="custom-bullets">
             <ul>
                 <li>Electric Vehicles: Passenger BEVs and PHEVs from the MA Vehicle Census https://geodot-massdot.hub.arcgis.com/pages/vehicle-census.</li>
-                <li>Heat Pumps: Mass Save program https://masssavedata.com/public/home. (Exception: values below 100 are not provided by Mass Save \
-            due to confidentiality concerns, therefore data may be incomplete particularly for smaller communities. \
-            Data is unavailable for most MLP communities.)</li>
+                <li>Heat Pumps: Mass Save program https://masssavedata.com/public/home. (Exception: Data is unavailable for most MLP communities.)</li>
                 <li>Solar: Residential solar data comes from the MassCEC Production Tracking System (PTS). The tracker uses data from the \
             year 2022 for solar data because the PTS site notes that data from 2022-2024 may be incomplete, \
             visit https://www.masscec.com/production-tracking-system-pts for more information.</li>

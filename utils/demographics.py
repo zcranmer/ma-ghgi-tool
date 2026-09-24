@@ -10,9 +10,10 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # functions for demographic figures
-@st.cache_data
+#@st.cache_data
 def m_demog_graph(m,dataset,start_year,end_year):
     subset = dataset[(dataset['Municipality']==m)&(dataset['Year']<=end_year)]
+    subset['Median household income'] = pd.to_numeric(subset['Median household income'],errors='coerce')
     
     fig = make_subplots(rows=3,cols=1,specs=[[{'type':'scatter'}],
                                              [{'type':'scatter'}],
