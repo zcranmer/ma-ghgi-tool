@@ -76,7 +76,17 @@ def solar_graph(m,solar):
     fig.update_xaxes(title=dict(text='Year',font=dict(size=18,color='black')),
                      tickvals=list(range(2000,2026,5)),
                      tickfont=dict(size=14,color='black'))
-    fig.update_traces(mode='markers+lines',hovertemplate=None)
+    for data in fig.data:
+        if data.yaxis == "y":  # First subplot (y-axis defaults to 'y')
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f}"
+        elif data.yaxis == "y2":  # Second subplot
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} miles"
+        elif data.yaxis == "y3":  # Third subplot
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} MMBTU"
+        elif data.yaxis == "y4":  # Fourth subplot
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} MTCO2e"
+    fig.update_traces(mode='markers+lines',#hovertemplate=None
+                      hovertemplate = "Year: %{x}<br>%{y:,.0f} kW DC")
     fig.update_layout(hovermode='x',showlegend=True,
                       legend=dict(orientation="h",
                                   yanchor="bottom",

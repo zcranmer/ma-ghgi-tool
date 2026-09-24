@@ -19,11 +19,11 @@ import copy
 #@st.cache_data
 def compare_table(dataset,main_muni,peer_munis):
     data_cols = ['Municipality','Year',
-                 'Total (MTCO2e)','HH with HPs','HH with PVs','Percent EVs',
+                 'Total (MTCO2e)','HH with HPs new','HH with PVs','Percent EVs',
                  'Population','Median household income',
                  ]
     data_year = {'Total (MTCO2e)':2024,
-                 'HH with HPs':2024,
+                 'HH with HPs new':2025,
                  'HH with PVs':2024,
                  'Percent EVs':2025,
                  'Population':2024,
@@ -31,7 +31,7 @@ def compare_table(dataset,main_muni,peer_munis):
                  }
     display_labels = {"Total (MTCO2e)":"Total GHGs",
                       'Median household income':'Income',
-                      'HH with HPs':'% HPs',
+                      'HH with HPs new':'% Heat Pumps',
                       'HH with PVs':'% Solar',
                       'Percent EVs':'% EVs',
                       }
@@ -43,6 +43,10 @@ def compare_table(dataset,main_muni,peer_munis):
 
     metrics = list(data_year.keys())
     df = dataset.loc[dataset["Municipality"].isin(selected),["Municipality", "Year"] + metrics].copy()
+    df['Total (MTCO2e)'] = df['Total (MTCO2e)'].round(0)
+    df['HH with HPs new'] = df['HH with HPs new'].round(2)
+    df['HH with PVs'] = df['HH with PVs'].round(2)
+    df['Percent EVs'] = df['Percent EVs'].round(2)
     
     table = pd.DataFrame({"Municipality": selected})
 
@@ -129,7 +133,7 @@ def map_figure(dataset,solar_data,geodata,y,d):
         "Percent Households with Heat Pumps": {
             "df": dataset_year,
             "loc_col": "Municipality",
-            "val_col": "HH with HPs",
+            "val_col": "HH with HPs new",
             "label": 'Percent HPs',
             "raw_fmt": ":.1f",
             },
@@ -208,7 +212,7 @@ def scatter_explore(dataset,x_val,y,d,m,p):
                   'Solar PV Capacity':'Capacity (kW DC) All Cumulative',
                   'Residential Solar PV Capacity':'Capacity (kW DC) Residential Cumulative',
                   'Percent EVs':'Percent EVs',
-                  'Percent Households with Heat Pumps':'HH with HPs',
+                  'Percent Households with Heat Pumps':'HH with HPs new',
                   'Percent Households with Solar':'HH with PVs',
                   }
     

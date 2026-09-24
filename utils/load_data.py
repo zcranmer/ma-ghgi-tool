@@ -222,6 +222,7 @@ def load_data(start_year):
                            'Cumulative MLP installed heat pumps Small Multifamily, 4-8 Units',
                            'Cumulative MLP installed heat pumps Total',
                            'Cumulative MLP installed heat pumps Unknown building use',
+                           'HH with HPs new',
                     # add solar data here once cleaned set is added in
                     'Capacity (kW DC) All',
                     'Capacity (kW DC) Residential',

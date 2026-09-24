@@ -209,8 +209,8 @@ if st.session_state.active_view == 'Overview':
         n_accounts = dataset.loc[(dataset['Year']==default_year),'Active accounts Total'].astype('float').sum().item()
     hh_w_hps = 100*n_hps/n_accounts
     #top_hps = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs']]
-    top1_hp_adopters = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs']].nlargest(4,columns='HH with HPs')
-    top10_hp_adopters = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs']].nlargest(35,columns='HH with HPs')
+    top1_hp_adopters = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs new']].nlargest(4,columns='HH with HPs new')
+    top10_hp_adopters = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs new']].nlargest(35,columns='HH with HPs new')
     
     hh_w_pvs = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year),'HH with PVs'].item()
     top1_pv_adopters = dataset.loc[dataset['Year']==default_year,['Municipality','HH with PVs']].nlargest(4,columns='HH with PVs')
@@ -392,7 +392,7 @@ elif st.session_state.active_view == 'Buildings':
         st.metric(label = 'Community aggregation?',
                   value = cea)
     
-    st.markdown('*Note: Heat pump data is not available for most communities served by a Municipal Light Plant (MLP).', unsafe_allow_html=True)
+    st.markdown('*Note: Heat pump data is not available or incomplete for most communities served by a Municipal Light Plant (MLP).', unsafe_allow_html=True)
                 
     st.markdown('Building emissions do not factor in renewable energy purchased through community aggregation programs. \
                 This will be available in a future version.', unsafe_allow_html=True)
@@ -663,20 +663,9 @@ elif st.session_state.active_view == 'Compare':
                 controls available in the top right corner of the table including hiding \
                 columns and downloading the data as a csv file.')
     table = compare_table(dataset,municipality,data0)
-    
-    column_config = {
-    "Municipality": st.column_config.TextColumn(width="medium"),
-    "Total GHG\n(2024)": st.column_config.NumberColumn(format="%,.0f"),
-    "Population\n(2024)": st.column_config.NumberColumn(format="%d"),
-    "Households\n(2024)": st.column_config.NumberColumn(format="%d"),
-    "Median income\n(2024)": st.column_config.NumberColumn(format="$%d"),
-    "% HPs\n(2024)": st.column_config.NumberColumn(format="%.2f"),
-    "%Solar\n(2024)": st.column_config.NumberColumn(format="%.2f"),
-    "% EVs\n(2025)": st.column_config.NumberColumn(format="%.2f"),
-    }
 
     st.data_editor(table, hide_index=True, disabled=True,
-                   column_config=column_config)
+                   )
     
     st.markdown('**Which dataset would you like to map?**')
     data1 = st.selectbox('Choose from the drop down menu',
@@ -695,6 +684,8 @@ elif st.session_state.active_view == 'Compare':
     
     if data1 in ['Total Emissions','Per Capita Emissions','Transportation Emissions','Percent EVs','Percent Households with Heat Pumps']:
         start_year = 2020
+        if data1 in ['Percent EVs','Percent Households with Heat Pumps']:
+            end_year = 2025
     else: start_year = 2017
     year7 = st.selectbox('Choose from the drop down menu',
                          range(end_year,start_year-1,-1),
@@ -709,7 +700,7 @@ elif st.session_state.active_view == 'Compare':
     
     st.markdown('Explore the dataset: choose variables to view on the graph.')
     data2 = st.selectbox('Choose a variable for the horizontal (x-) axis:',
-                         ['Population', 'Households', 'Median household income',
+                         ['Median household income', 'Population', 'Households', 
                           'Households with <$50,000 income',
                           'Median age','Owner occupied housing', 'Renter occupied housing',
                           'Single family homes',

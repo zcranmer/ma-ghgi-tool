@@ -180,11 +180,11 @@ def trans_graph0(m,dataset,start_year,end_year,colors_vehicles,colors_fuel):
         if data.yaxis == "y":  # First subplot (y-axis defaults to 'y')
             data.hovertemplate = "Year: %{x}<br>%{y:,.0f}"
         elif data.yaxis == "y2":  # Second subplot
-            data.hovertemplate = "Year: %{x}<br>%{y2:,.0f} miles"
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} miles"
         elif data.yaxis == "y3":  # Third subplot
-            data.hovertemplate = "Year: %{x}<br>%{y3:,.0f} MMBTU"
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} MMBTU"
         elif data.yaxis == "y4":  # Fourth subplot
-            data.hovertemplate = "Year: %{x}<br>%{y4:,.0f} MTCO2e"
+            data.hovertemplate = "Year: %{x}<br>%{y:,.0f} MTCO2e"
     
     fig.update_layout(hovermode='x',
                       title=dict(text='Share of vehicles and miles driven in '+m,font=dict(size=24)),
