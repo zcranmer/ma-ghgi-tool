@@ -22,7 +22,7 @@ pg = st.navigation([st.Page('pages/GHG_Inventory_Tool.py'),
                     st.Page('pages/2_About.py'),
                     st.Page('pages/3_Climate Goals Tracker.py'),
                     st.Page('pages/4_Feedback.py'),
-                    #st.Page('pages/5_Tools in Beta.py')
+                    st.Page('pages/5_Tools in Beta.py')
                     ])
 pg.run()
 

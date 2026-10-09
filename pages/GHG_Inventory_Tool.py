@@ -202,12 +202,15 @@ if st.session_state.active_view == 'Overview':
     default_year = 2024
     base_year = 2020
     
-    n_hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year+1),'Cumulative installed heat pumps Total'].astype('float').item()
-    n_accounts = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year),'Active accounts Total'].astype('float').item()
-    if municipality == 'Massachusetts':
-        n_hps = dataset.loc[(dataset['Year']==default_year),'Cumulative installed heat pumps Total'].astype('float').sum().item()
-        n_accounts = dataset.loc[(dataset['Year']==default_year),'Active accounts Total'].astype('float').sum().item()
-    hh_w_hps = 100*n_hps/n_accounts
+    #n_hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year+1),['Cumulative installed heat pumps Total','Cumulative MLP installed heat pumps Total']].sum().astype('float')#.item()
+    #n_accounts = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year),'Active accounts Total'].astype('float').item()
+    #if municipality == 'Massachusetts':
+    #    n_hps = dataset.loc[(dataset['Year']==default_year),'Cumulative installed heat pumps Total'].astype('float').sum().item()
+    #    n_accounts = dataset.loc[(dataset['Year']==default_year),'Active accounts Total'].astype('float').sum().item()
+    #hh_w_hps = 100*n_hps/n_accounts
+    hh_w_hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year+1),'HH with HPs new'].astype('float').item()
+    if municipality in ['Concord','Stow']:
+        hh_w_hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==default_year),'HH with HPs new'].astype('float').item()
     #top_hps = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs']]
     top1_hp_adopters = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs new']].nlargest(4,columns='HH with HPs new')
     top10_hp_adopters = dataset.loc[dataset['Year']==default_year+1,['Municipality','HH with HPs new']].nlargest(35,columns='HH with HPs new')
@@ -228,7 +231,10 @@ if st.session_state.active_view == 'Overview':
     
     col1,col2,col3,col4 = st.columns([1,3,3,1])
     with col2:
-        st.metric(label=f'{default_year+1} % Households with at least one heat pump for any end use.',
+        if municipality in ['Concord','Stow']:
+            hp_year = 2024
+        else: hp_year = 2025
+        st.metric(label=f'{hp_year} % Households with at least one heat pump for any end use.',
                   value=f'{hh_w_hps:,.2f}',
                   )
         if municipality in top1_hp_adopters['Municipality'].to_numpy():
@@ -358,7 +364,13 @@ elif st.session_state.active_view == 'Buildings':
     # calc # of heat pumps or other metrics to show
     end_year_bldgs = 2025
     hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year_bldgs),'Cumulative installed heat pumps Total']
-    if hps.isna().item():
+    if municipality == 'Concord':
+        hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year_bldgs-1),'Cumulative MLP installed heat pumps Total']
+    if municipality == 'Stow':
+        hps_iou = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year_bldgs),'Cumulative installed heat pumps Total'].astype('float').item()
+        hps_mlp = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year_bldgs-1),'Cumulative MLP installed heat pumps Total'].item()
+        hps = hps_iou+hps_mlp
+    elif hps.isna().item():
         hps = 'unknown'
     else: hps = hps.astype('int').item()
     households = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year),'Households'].astype('int').item()
@@ -669,13 +681,14 @@ elif st.session_state.active_view == 'Compare':
     
     st.markdown('**Which dataset would you like to map?**')
     data1 = st.selectbox('Choose from the drop down menu',
-                         ['Total Emissions','Per Capita Emissions',
+                         ['Percent EVs',
+                          'Percent Households with Heat Pumps',
+                          'Percent Households with Solar',
+                          'Total Emissions','Per Capita Emissions',
                           'Building Emissions','Transportation Emissions',
                           'Solar PV Capacity','Residential Solar PV Capacity',
-                          'Percent EVs',
-                          'Percent Households with Heat Pumps',
-                          'Percent Households with Solar'],
-                         index=1,
+                          ],
+                         index=0,
                          key='data1',
                          on_change=track_selectbox,
                          kwargs={"widget_key": "data1", "widget_name": "compare", "page": "Home"}
