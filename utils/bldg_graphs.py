@@ -118,7 +118,8 @@ def ms_hp_new_graph(m,dataset):
             'MLP installed heat pumps Total',
             'Cumulative MLP installed heat pumps Total']
     
-    subset = dataset.loc[(dataset['Municipality']==m),cols].copy()
+    subset = dataset.loc[(dataset['Municipality']==m)&(dataset['Year']<2026),cols].copy()
+    subset2 = dataset.loc[(dataset['Municipality']==m)&(dataset['Year']<2024),cols].copy()
     
     fig = make_subplots(rows=1,cols=2,
                         subplot_titles=('Mass Save Program Participation',
@@ -126,13 +127,13 @@ def ms_hp_new_graph(m,dataset):
                         )
     
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Active accounts Total'],
+        go.Scatter(x=subset2.Year,y=subset2['Active accounts Total'],
                    hoverinfo='x+y+name',mode='lines',
                    showlegend=True,legendgroup = '1',
                    name='Accounts'),
                    row=1,col=1)
     fig.add_trace(
-        go.Scatter(x=subset.Year,y=subset['Participants Total'],
+        go.Scatter(x=subset2.Year,y=subset2['Participants Total'],
                    hoverinfo='x+y+name',mode='lines',
                    showlegend=True,legendgroup = '1',
                    name='Participants'),
@@ -184,6 +185,130 @@ def ms_hp_new_graph(m,dataset):
         
     st.plotly_chart(fig)
 
+def ms_bldg_year(m,data_select,dataset):
+    select_dict = {'Accounts':'Active accounts',
+                   'Participation':'Participation',
+                   'Weatherization':'Weatherization',
+                   'Heat Pump Installations':'Installed heat pumps'
+                   }
+    bldg_types = ['Single Family','Duplex/Triplex','Condo',
+                  'Small Multifamily, 4-8 Units','Large Multifamily, >8 Units',
+                  'Mobile/Other Residential','Mixed Use - Primarily Residential',
+                  'Housing Authorities/Subsidized Housing','Other Non-Residential',
+                  ]
+    
+    subset = dataset.loc[(dataset['Municipality']==m)&(dataset['Year']<2025)&(dataset['Year']>2016),:].copy()
+    
+    fig = make_subplots(rows=1,cols=1,
+                        )
+    
+    for b in bldg_types:
+        column_name=f'{select_dict[data_select]} {b}'
+        
+        fig.add_trace(
+            go.Scatter(x=subset.Year,y=subset[column_name],
+                   hoverinfo='x+y+name',mode='lines',
+                   showlegend=True,legendgroup = '1',
+                   stackgroup='one',
+                   name=f'{b}'),
+                   row=1,col=1)
+    
+    fig.update_traces(mode='markers+lines',hovertemplate=None)
+    fig.update_layout(hovermode='x',
+                      title=dict(text=f'Accounts by Building Type in {m}',
+                                font=dict(size=24)),
+                      yaxis=dict(title=dict(text='Accounts',font=dict(size=14,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black')),
+                      #showlegend=False,
+                      height=400,width=600,
+                      #annotations=[dict(font=dict(color='black'))]
+                      )
+    fig.update_xaxes(title=dict(text='Year',font=dict(size=14,color='black')),
+                     tickfont=dict(size=14,color='black'))
+
+    st.plotly_chart(fig)
+    
+def ms_bldg_type(m,y,dataset):
+    bldg_types = ['Single Family','Duplex/Triplex','Condo',
+                  'Small Multifamily, 4-8 Units','Large Multifamily, >8 Units',
+                  'Mobile/Other Residential','Mixed Use - Primarily Residential',
+                  'Housing Authorities/Subsidized Housing','Other Non-Residential',
+                  ]
+    
+    subset = dataset.loc[(dataset['Municipality']==m)&(dataset['Year']==y),:].copy()
+    
+    active_accounts = [
+        subset[f'Active accounts {b}'].iloc[0]
+        for b in bldg_types
+        ]
+    participants = [
+        subset[f'Participants {b}'].iloc[0]
+        for b in bldg_types
+    ]
+
+    weatherized = [
+        subset[f'Weatherized accounts {b}'].iloc[0]
+        for b in bldg_types
+    ]
+
+    heat_pumps = [
+        subset[f'Installed heat pumps {b}'].iloc[0]
+        for b in bldg_types
+    ]
+    
+    fig = make_subplots(rows=1,cols=4,shared_yaxes=True,
+                        subplot_titles=('Active Accounts',
+                                        'Mass Save Participation',
+                                        'Weatherization',
+                                        'Heat Pump Adoption'),
+                        )
+    fig.add_trace(
+        go.Bar(x=active_accounts,y=bldg_types,
+               orientation='h',
+               showlegend=False,
+               ),
+            row=1,col=1)
+    fig.add_trace(
+        go.Bar(x=participants,y=bldg_types,
+               orientation='h',
+                   showlegend=False,
+                   ),
+                   row=1,col=2)
+    fig.add_trace(
+        go.Bar(x=weatherized,y=bldg_types,
+               orientation='h',
+                   showlegend=False,
+                   ),
+                   row=1,col=3)
+    fig.add_trace(
+        go.Bar(x=heat_pumps,y=bldg_types,
+               orientation='h',
+                   showlegend=False,
+                   ),
+                   row=1,col=4)
+    
+    fig.update_layout(hovermode='x',
+                      title=dict(
+                          text=f'Accounts, participation, weatherization, and heat pump adoption <br> in {m} and {y} by building type',
+                          font=dict(size=24),
+                          ),
+                      margin=dict(t=120),
+                      xaxis=dict(title=dict(text='Accounts',font=dict(size=14,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black')),
+                      yaxis=dict(title=dict(text='Building Type',font=dict(size=14,color='black'),standoff=10),
+                                 tickfont=dict(size=14,color='black')),
+                      xaxis2=dict(title=dict(text='Participants',font=dict(size=14,color='black'),standoff=0),
+                                  tickfont=dict(size=14,color='black')),
+                      xaxis3=dict(title=dict(text='Weatherizations',font=dict(size=14,color='black'),standoff=0),
+                                  tickfont=dict(size=14,color='black')),
+                      xaxis4=dict(title=dict(text='Heat Pump Installations',font=dict(size=14,color='black'),standoff=0),
+                                  tickfont=dict(size=14,color='black')),
+                      height=400,width=1000,
+                      annotations=[dict(font=dict(color='black'))]
+                      )
+    
+    st.plotly_chart(fig)
+    return subset
 
 def bldg_graph0(m,dataset,start_year,end_year):
     years = list(range(end_year-4,end_year+1))
@@ -349,7 +474,7 @@ def bldg_graph0(m,dataset,start_year,end_year):
 
 def bldg_graph1(m,dataset,colors_fuel,start_year,end_year):
     subset = dataset[(dataset['Municipality']==m)&(dataset['Year']<end_year+1)].copy()
-    subset_e = dataset[(dataset['Municipality']==m)&(dataset['Year']<end_year+1)&(dataset['Year']>2016)].copy()
+    subset_e = dataset[(dataset['Municipality']==m)&(dataset['Year']<end_year)&(dataset['Year']>2016)].copy()
     
     # stacked area charts - energy and emissions
     fig = make_subplots(rows=2,cols=2,
