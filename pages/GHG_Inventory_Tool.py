@@ -438,15 +438,15 @@ elif st.session_state.active_view == 'Buildings':
     #                            )
     # ms_bldg_year(municipality,data_select,dataset)
     
-    # st.text(' ')
-    # st.text(' ')
-    # st.markdown('**Which year would you like to look at?**')
-    # year4 = st.selectbox('**Choose a year from the drop down menu**',
-    #                         range(end_year,start_year-1,-1),
-    #                         index=0,
-    #                         key='year4',
-    #                         )
-    # ms_bldg_type(municipality,year4,dataset)
+    st.text(' ')
+    st.text(' ')
+    st.markdown('**Which year would you like to look at?**')
+    year4 = st.selectbox('**Choose a year from the drop down menu**',
+                            range(end_year,start_year-1,-1),
+                            index=0,
+                            key='year4',
+                            )
+    ms_bldg_type(municipality,year4,dataset)
     
     
     with st.expander('Data notes for Mass Save participation and heat pumps:',
