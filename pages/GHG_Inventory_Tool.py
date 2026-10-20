@@ -344,12 +344,13 @@ elif st.session_state.active_view == 'Demographics':
 #with tab3:
 elif st.session_state.active_view == 'Buildings':
     st.header('Building Energy and Emissions')
-    from utils.bldg_graphs import ms_hp_graph, ms_hp_new_graph, ms_bldg_year, ms_bldg_type, bldg_graph0, bldg_graph1, bldg_graph2
+    from utils.bldg_graphs import ms_hp_graph, ms_hp_new_graph, bldg_graph0, bldg_graph1, bldg_graph2
     st.markdown("Below are some key metrics related to energy use in buildings.\
                 The Mass Save particition rate is a cumulative measure of participation since 2013. \
                     More detail about Mass Save participation is provided in a graph below.\
                 The number of heat pumps in the municipality is from the Mass Save program (2024 data published in December 2025). \
-                    Data is not available for most MLP communities.\
+                    Data is not available for most MLP communities or communities with less than 100 accounts with heat pumps. \
+                    (Mass Save's reporting threshold for privacy.)\
                 The number of households is from the Census Bureau's ACS 5-year data for 2024 (published in January 2026).\
                 The presence of a Community Electricity Aggregation (CEA) program is determined based on a list of approved programs \
                     from the MA DPU as of March 2026.")
@@ -362,7 +363,7 @@ elif st.session_state.active_view == 'Buildings':
         
     # calc # of heat pumps or other metrics to show
     end_year_bldgs = 2025
-    hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year_bldgs),'Cumulative heat pumps All']
+    hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year_bldgs),'Cumulative installed heat pumps Total']
     if municipality == 'Concord':
         hps = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==end_year_bldgs-1),'Cumulative MLP installed heat pumps Total']
     if municipality == 'Stow':
@@ -429,24 +430,6 @@ elif st.session_state.active_view == 'Buildings':
     
     #ms_hp_graph(municipality,dataset,start_year,end_year_bldgs)
     ms_hp_new_graph(municipality,dataset)
-    
-    st.markdown('**Which data would you like to look at?**')
-    data_select = st.selectbox('**Choose from the following drop down menu**',
-                               ['Accounts','Participation','Weatherization','Heat Pump Installations'],
-                               index=0,
-                               key='data_select',
-                               )
-    ms_bldg_year(municipality,data_select,dataset)
-    
-    st.text(' ')
-    st.text(' ')
-    st.markdown('**Which year would you like to look at?**')
-    year4 = st.selectbox('**Choose a year from the drop down menu**',
-                            range(end_year,start_year-1,-1),
-                            index=0,
-                            key='year4',
-                            )
-    ms_bldg_type(municipality,year4,dataset)
     
     with st.expander('Data notes for Mass Save participation and heat pumps:',
                      expanded=True):
