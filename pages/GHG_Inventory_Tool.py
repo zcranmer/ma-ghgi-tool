@@ -430,13 +430,13 @@ elif st.session_state.active_view == 'Buildings':
     #ms_hp_graph(municipality,dataset,start_year,end_year_bldgs)
     ms_hp_new_graph(municipality,dataset)
     
-    # st.markdown('**Which data would you like to look at?**')
-    # data_select = st.selectbox('**Choose from the following drop down menu**',
-    #                            ['Accounts','Participation','Weatherization','Heat Pump Installations'],
-    #                            index=0,
-    #                            key='data_select',
-    #                            )
-    # ms_bldg_year(municipality,data_select,dataset)
+    st.markdown('**Which data would you like to look at?**')
+    data_select = st.selectbox('**Choose from the following drop down menu**',
+                               ['Accounts','Participation','Weatherization','Heat Pump Installations'],
+                               index=0,
+                               key='data_select',
+                               )
+    ms_bldg_year(municipality,data_select,dataset)
     
     st.text(' ')
     st.text(' ')
@@ -446,6 +446,20 @@ elif st.session_state.active_view == 'Buildings':
                             index=0,
                             key='year4',
                             )
+    tot_acc = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==year4),'Active accounts Total'].iloc[0]
+    sf_acc = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==year4),'Active accounts Single Family'].iloc[0]
+    pct_acc = np.round(100*sf_acc/tot_acc,1)
+    tot_par = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==year4),'Participants Total'].iloc[0]
+    sf_par = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==year4),'Participants Single Family'].iloc[0]
+    pct_par = np.round(100*sf_par/tot_par,1)
+    tot_wea = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==year4),'Weatherized accounts Total'].iloc[0]
+    sf_wea = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==year4),'Weatherized accounts Single Family'].iloc[0]
+    pct_wea = np.round(100*sf_wea/tot_wea,1)
+    tot_hp = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==year4),'Installed heat pumps Total'].iloc[0]
+    sf_hp = dataset.loc[(dataset['Municipality']==municipality)&(dataset['Year']==year4),'Installed heat pumps Single Family'].iloc[0]
+    pct_hp = np.round(100*sf_hp/tot_hp,1)
+    st.markdown(f'In {year4} Single Family homes made up {pct_acc}% of accounts in {municipality}, {pct_par}% of participants, \
+                {pct_wea}% of weatherizations and {pct_hp}% of heat pump installations.')
     ms_bldg_type(municipality,year4,dataset)
     
     

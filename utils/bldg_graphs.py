@@ -187,8 +187,8 @@ def ms_hp_new_graph(m,dataset):
     
 def ms_bldg_year(m,data_select,dataset):
     select_dict = {'Accounts':'Active accounts',
-                   'Participation':'Participation',
-                   'Weatherization':'Weatherization',
+                   'Participation':'Participants',
+                   'Weatherization':'Weatherized accounts',
                    'Heat Pump Installations':'Installed heat pumps'
                    }
     bldg_types = ['Single Family','Duplex/Triplex','Condo',
@@ -215,9 +215,9 @@ def ms_bldg_year(m,data_select,dataset):
     
     fig.update_traces(mode='markers+lines',hovertemplate=None)
     fig.update_layout(hovermode='x',
-                      title=dict(text=f'Accounts by Building Type in {m}',
+                      title=dict(text=f'{data_select} by Building Type in {m}',
                                 font=dict(size=24)),
-                      yaxis=dict(title=dict(text='Accounts',font=dict(size=14,color='black'),standoff=10),
+                      yaxis=dict(title=dict(text=f'{select_dict[data_select]}',font=dict(size=14,color='black'),standoff=10),
                                  tickfont=dict(size=14,color='black')),
                       #showlegend=False,
                       height=400,width=600,
@@ -266,24 +266,28 @@ def ms_bldg_type(m,y,dataset):
         go.Bar(x=active_accounts,y=bldg_types,
                orientation='h',
                showlegend=False,
+               name='Accounts',
                ),
             row=1,col=1)
     fig.add_trace(
         go.Bar(x=participants,y=bldg_types,
                orientation='h',
                    showlegend=False,
+                   name='Participation',
                    ),
                    row=1,col=2)
     fig.add_trace(
         go.Bar(x=weatherized,y=bldg_types,
                orientation='h',
                    showlegend=False,
+                   name='Weatherization',
                    ),
                    row=1,col=3)
     fig.add_trace(
         go.Bar(x=heat_pumps,y=bldg_types,
                orientation='h',
                    showlegend=False,
+                   name='Heat Pumps',
                    ),
                    row=1,col=4)
     
